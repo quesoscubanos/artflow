@@ -4,7 +4,7 @@ import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
 
 class MainNavigationPage extends StatefulWidget {
-  final Widget child;
+  final Widget child; 
   
   const MainNavigationPage({super.key, required this.child});
 
