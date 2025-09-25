@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
 
 class TutorialsPage extends StatefulWidget {
   const TutorialsPage({super.key});
@@ -10,44 +11,7 @@ class TutorialsPage extends StatefulWidget {
 }
 
 class _TutorialsPageState extends State<TutorialsPage> {
-  final List<Map<String, dynamic>> _tutorials = [
-    {
-      'id': '1',
-      'title': 'Drawing Fundamentals',
-      'description': 'Learn the basics of drawing',
-      'author': 'ArtFlowRise Team',
-      'level': 'Beginner',
-      'duration': '45 min',
-      'isOfficial': true,
-    },
-    {
-      'id': 'perspective-drawing',
-      'title': 'Drawing with Perspective',
-      'description': 'Master perspective techniques',
-      'author': 'ArtFlowRise Team',
-      'level': 'Intermediate',
-      'duration': '60 min',
-      'isOfficial': true,
-    },
-    {
-      'id': '3',
-      'title': 'Color Theory',
-      'description': 'Understanding colors and harmony',
-      'author': 'Color_Expert',
-      'level': 'Beginner',
-      'duration': '30 min',
-      'isOfficial': false,
-    },
-    {
-      'id': '4',
-      'title': 'Portrait Techniques',
-      'description': 'Drawing realistic portraits',
-      'author': 'Portrait_Master',
-      'level': 'Advanced',
-      'duration': '90 min',
-      'isOfficial': false,
-    },
-  ];
+  List<Map<String, dynamic>> get _tutorials => officialTutorials;
 
   @override
   Widget build(BuildContext context) {

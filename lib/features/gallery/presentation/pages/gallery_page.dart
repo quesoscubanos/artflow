@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
 import 'package:artflowrise/features/gallery/presentation/pages/gallery_tutorial_detail_page.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -15,44 +16,7 @@ class _GalleryPageState extends State<GalleryPage> {
   String _selectedCategory = 'All';
   final List<String> _categories = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
-  final List<Map<String, dynamic>> _tutorials = [
-    {
-      'id': 'gallery-1',
-      'title': 'Advanced Shading Techniques',
-      'description': 'Master the art of creating depth with shadows',
-      'author': 'Shadow_Master',
-      'level': 'Advanced',
-      'duration': '75 min',
-      'isOfficial': false,
-    },
-    {
-      'id': 'gallery-2',
-      'title': 'Digital Painting Basics',
-      'description': 'Introduction to digital art tools and techniques',
-      'author': 'Digital_Artist',
-      'level': 'Beginner',
-      'duration': '50 min',
-      'isOfficial': false,
-    },
-    {
-      'id': 'gallery-3',
-      'title': 'Composition and Balance',
-      'description': 'Learn to create visually appealing artwork',
-      'author': 'Composition_Expert',
-      'level': 'Intermediate',
-      'duration': '40 min',
-      'isOfficial': true,
-    },
-    {
-      'id': 'gallery-4',
-      'title': 'Watercolor Mastery',
-      'description': 'Advanced watercolor techniques and tips',
-      'author': 'Watercolor_Pro',
-      'level': 'Advanced',
-      'duration': '85 min',
-      'isOfficial': false,
-    },
-  ];
+  List<Map<String, dynamic>> get _tutorials => userTutorials;
 
   List<Map<String, dynamic>> get _filteredTutorials {
     if (_selectedCategory == 'All') {

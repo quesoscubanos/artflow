@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
 
 // Tutorial data model
 class Tutorial {
@@ -237,7 +238,7 @@ class _TutorialDetailPageState extends State<TutorialDetailPage> {
   void initState() {
     super.initState();
     // In a real app, you'd fetch the tutorial by ID
-    tutorial = tutorialsData[widget.tutorialId] ?? tutorialsData.values.first;
+    tutorial = allTutorialsData[widget.tutorialId] ?? allTutorialsData.values.first;
     currentStepIndex = widget.initialStep.clamp(0, tutorial.steps.length - 1);
   }
 

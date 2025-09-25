@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
 
 class MainNavigationPage extends StatefulWidget {
   final Widget child; 
@@ -253,43 +254,48 @@ class DashboardPage extends StatelessWidget {
 
   Widget _buildMixedContentFeed(BuildContext context) {
     final mixedContent = [
+      // Official tutorial progress
       {
         'type': 'tutorial',
         'title': 'Step 1: Begin with a light sketch of the basic shapes. Focus on proportions and overall composition.',
-        'image': 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-RsqcGbjsXj2IVHIPXlqHSJEEebxYC4.png',
-        'author': 'ArtFlowRise',
+        'image': 'images/perspective.png',
+        'author': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['author'],
         'isOfficial': true,
         'progress': 0.2,
       },
+      // User gallery item
       {
         'type': 'gallery',
-        'title': 'My latest watercolor painting',
-        'image': null,
-        'author': 'Sarah_Artist',
+        'title': userTutorials.first['title'],
+        'image': 'images/perspective.png',
+        'author': userTutorials.first['author'],
         'isOfficial': false,
         'likes': 24,
       },
+      // Another official tutorial
       {
         'type': 'tutorial',
         'title': 'Dibujo con Perspectiva - Paso 2 de 7',
-        'image': 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cuZsr9QKrPQ96oFDHJ6VN4EaFxvDCz.png',
-        'author': 'ArtFlowRise',
+        'image': 'images/perspective.png',
+        'author': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['author'],
         'isOfficial': true,
         'progress': 0.3,
       },
+      // Another user gallery item
       {
         'type': 'gallery',
-        'title': 'Portrait practice session',
-        'image': null,
-        'author': 'Mike_Draws',
+        'title': userTutorials[1]['title'],
+        'image': 'images/perspective.png',
+        'author': userTutorials[1]['author'],
         'isOfficial': false,
         'likes': 18,
       },
+      // Another official tutorial
       {
         'type': 'tutorial',
-        'title': 'Color Theory Fundamentals',
-        'image': null,
-        'author': 'ArtFlowRise',
+        'title': officialTutorials.firstWhere((t) => t['id'] == '3')['title'],
+        'image': 'images/perspective.png',
+        'author': officialTutorials.firstWhere((t) => t['id'] == '3')['author'],
         'isOfficial': true,
         'progress': 0.0,
       },
@@ -379,7 +385,7 @@ class DashboardPage extends StatelessWidget {
             child: imageUrl != null
                 ? ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Image.network(
+                    child: Image.asset(
                       imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
@@ -537,14 +543,32 @@ class DashboardPage extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               color: Colors.grey[100],
             ),
-            child: Container(
-              color: AppTheme.primaryPink.withOpacity(0.1),
-              child: Icon(
-                Icons.image,
-                size: 48,
-                color: AppTheme.primaryPink,
-              ),
-            ),
+            child: imageUrl != null
+                ? ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    child: Image.asset(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: AppTheme.primaryPink.withOpacity(0.1),
+                          child: Icon(
+                            Icons.image,
+                            size: 48,
+                            color: AppTheme.primaryPink,
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : Container(
+                    color: AppTheme.primaryPink.withOpacity(0.1),
+                    child: Icon(
+                      Icons.image,
+                      size: 48,
+                      color: AppTheme.primaryPink,
+                    ),
+                  ),
           ),
           
           Padding(
