@@ -171,18 +171,24 @@ class _GalleryPageState extends State<GalleryPage> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.primaryBlue.withOpacity(0.3),
-                      AppTheme.primaryPink.withOpacity(0.3),
-                    ],
-                  ),
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                 ),
-                child: const Icon(
-                  Icons.play_circle_outline,
-                  size: 48,
-                  color: Colors.white,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: Image.asset(
+                    'images/perspective.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                        child: const Icon(
+                          Icons.image,
+                          size: 48,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

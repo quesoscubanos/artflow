@@ -107,18 +107,24 @@ class _TutorialsPageState extends State<TutorialsPage> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.primaryBlue.withOpacity(0.3),
-                    AppTheme.primaryPink.withOpacity(0.3),
-                  ],
-                ),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
-                Icons.play_circle_outline,
-                size: 32,
-                color: Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  'images/perspective.png',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: AppTheme.primaryBlue.withOpacity(0.1),
+                      child: const Icon(
+                        Icons.image,
+                        size: 32,
+                        color: AppTheme.primaryBlue,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             const SizedBox(width: 16),
