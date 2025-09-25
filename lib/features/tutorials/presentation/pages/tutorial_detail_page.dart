@@ -32,54 +32,188 @@ class TutorialStep {
 }
 
 // Mock tutorial data
-final Tutorial sampleTutorial = Tutorial(
-  id: 'perspective-drawing',
-  title: 'Drawing with Perspective',
-  steps: [
-    TutorialStep(
-      id: 'step-1',
-      title: 'Draw the Horizon Line',
-      description: 'Start by drawing a horizontal line across your paper. This represents the eye level and will be the foundation for your perspective drawing.',
-      imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Horizon+Line',
-    ),
-    TutorialStep(
-      id: 'step-2',
-      title: 'Add Vanishing Points',
-      description: 'Mark two points on the horizon line, one on each side. These will be your vanishing points where all parallel lines converge.',
-      imageUrl: 'https://via.placeholder.com/400x300/FF6B9E/FFFFFF?text=Vanishing+Points',
-    ),
-    TutorialStep(
-      id: 'step-3',
-      title: 'Draw Perspective Lines',
-      description: 'Connect the vanishing points to create diagonal lines that will guide your drawing. These lines show how objects appear to get smaller as they recede.',
-      imageUrl: 'https://via.placeholder.com/400x300/95A5A6/FFFFFF?text=Perspective+Lines',
-    ),
-    TutorialStep(
-      id: 'step-4',
-      title: 'Add Basic Shapes',
-      description: 'Using the perspective lines as guides, draw basic shapes like cubes or boxes. Make sure the edges align with your perspective lines.',
-      imageUrl: 'https://via.placeholder.com/400x300/2D3436/FFFFFF?text=Basic+Shapes',
-    ),
-    TutorialStep(
-      id: 'step-5',
-      title: 'Refine the Drawing',
-      description: 'Add details and refine your shapes. Remember that objects closer to you should appear larger and more detailed.',
-      imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Refine+Drawing',
-    ),
-    TutorialStep(
-      id: 'step-6',
-      title: 'Add Shading',
-      description: 'Add shadows and highlights to give your drawing depth and dimension. Light sources should be consistent throughout your drawing.',
-      imageUrl: 'https://via.placeholder.com/400x300/FF6B9E/FFFFFF?text=Add+Shading',
-    ),
-    TutorialStep(
-      id: 'step-7',
-      title: 'Final Touches',
-      description: 'Review your work and add any final details. Your perspective drawing should now show proper depth and realism.',
-      imageUrl: 'https://via.placeholder.com/400x300/95A5A6/FFFFFF?text=Final+Touches',
-    ),
-  ],
-);
+final Map<String, Tutorial> tutorialsData = {
+  'perspective-drawing': Tutorial(
+    id: 'perspective-drawing',
+    title: 'Drawing with Perspective',
+    steps: [
+      TutorialStep(
+        id: 'step-1',
+        title: 'Draw the Horizon Line',
+        description: 'Start by drawing a horizontal line across your paper. This represents the eye level and will be the foundation for your perspective drawing.',
+        imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Horizon+Line',
+      ),
+      TutorialStep(
+        id: 'step-2',
+        title: 'Add Vanishing Points',
+        description: 'Mark two points on the horizon line, one on each side. These will be your vanishing points where all parallel lines converge.',
+        imageUrl: 'https://via.placeholder.com/400x300/FF6B9E/FFFFFF?text=Vanishing+Points',
+      ),
+      TutorialStep(
+        id: 'step-3',
+        title: 'Draw Perspective Lines',
+        description: 'Connect the vanishing points to create diagonal lines that will guide your drawing. These lines show how objects appear to get smaller as they recede.',
+        imageUrl: 'https://via.placeholder.com/400x300/95A5A6/FFFFFF?text=Perspective+Lines',
+      ),
+      TutorialStep(
+        id: 'step-4',
+        title: 'Add Basic Shapes',
+        description: 'Using the perspective lines as guides, draw basic shapes like cubes or boxes. Make sure the edges align with your perspective lines.',
+        imageUrl: 'https://via.placeholder.com/400x300/2D3436/FFFFFF?text=Basic+Shapes',
+      ),
+      TutorialStep(
+        id: 'step-5',
+        title: 'Refine the Drawing',
+        description: 'Add details and refine your shapes. Remember that objects closer to you should appear larger and more detailed.',
+        imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Refine+Drawing',
+      ),
+      TutorialStep(
+        id: 'step-6',
+        title: 'Add Shading',
+        description: 'Add shadows and highlights to give your drawing depth and dimension. Light sources should be consistent throughout your drawing.',
+        imageUrl: 'https://via.placeholder.com/400x300/FF6B9E/FFFFFF?text=Add+Shading',
+      ),
+      TutorialStep(
+        id: 'step-7',
+        title: 'Final Touches',
+        description: 'Review your work and add any final details. Your perspective drawing should now show proper depth and realism.',
+        imageUrl: 'https://via.placeholder.com/400x300/95A5A6/FFFFFF?text=Final+Touches',
+      ),
+    ],
+  ),
+  'gallery-1': Tutorial(
+    id: 'gallery-1',
+    title: 'Advanced Shading Techniques',
+    steps: [
+      TutorialStep(
+        id: 'step-1',
+        title: 'Understanding Light Sources',
+        description: 'Identify the primary light source and how it affects shadows and highlights in your drawing.',
+        imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Light+Sources',
+      ),
+      TutorialStep(
+        id: 'step-2',
+        title: 'Basic Value Scale',
+        description: 'Create a value scale from pure white to pure black to understand tonal range.',
+        imageUrl: 'https://via.placeholder.com/400x300/FF6B9E/FFFFFF?text=Value+Scale',
+      ),
+      TutorialStep(
+        id: 'step-3',
+        title: 'Cast Shadows',
+        description: 'Learn how to draw realistic shadows cast by objects onto other surfaces.',
+        imageUrl: 'https://via.placeholder.com/400x300/95A5A6/FFFFFF?text=Cast+Shadows',
+      ),
+      TutorialStep(
+        id: 'step-4',
+        title: 'Form Shadows',
+        description: 'Master the shadows that define the three-dimensional form of objects.',
+        imageUrl: 'https://via.placeholder.com/400x300/2D3436/FFFFFF?text=Form+Shadows',
+      ),
+      TutorialStep(
+        id: 'step-5',
+        title: 'Reflected Light',
+        description: 'Add subtle reflected light to make your shading more realistic and sophisticated.',
+        imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Reflected+Light',
+      ),
+    ],
+  ),
+  'gallery-2': Tutorial(
+    id: 'gallery-2',
+    title: 'Digital Painting Basics',
+    steps: [
+      TutorialStep(
+        id: 'step-1',
+        title: 'Setting Up Your Workspace',
+        description: 'Configure your digital painting software with appropriate brushes and settings.',
+        imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Workspace+Setup',
+      ),
+      TutorialStep(
+        id: 'step-2',
+        title: 'Digital Brush Techniques',
+        description: 'Learn different brush types and how to use pressure sensitivity effectively.',
+        imageUrl: 'https://via.placeholder.com/400x300/FF6B9E/FFFFFF?text=Brush+Techniques',
+      ),
+      TutorialStep(
+        id: 'step-3',
+        title: 'Layer Management',
+        description: 'Organize your work with layers for better control and non-destructive editing.',
+        imageUrl: 'https://via.placeholder.com/400x300/95A5A6/FFFFFF?text=Layer+Management',
+      ),
+      TutorialStep(
+        id: 'step-4',
+        title: 'Color Mixing in Digital',
+        description: 'Understand how to mix colors digitally and create harmonious color schemes.',
+        imageUrl: 'https://via.placeholder.com/400x300/2D3436/FFFFFF?text=Digital+Color+Mixing',
+      ),
+    ],
+  ),
+  'gallery-3': Tutorial(
+    id: 'gallery-3',
+    title: 'Composition and Balance',
+    steps: [
+      TutorialStep(
+        id: 'step-1',
+        title: 'Rule of Thirds',
+        description: 'Divide your canvas into thirds and place key elements along these lines.',
+        imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Rule+of+Thirds',
+      ),
+      TutorialStep(
+        id: 'step-2',
+        title: 'Focal Points',
+        description: 'Create a clear focal point that draws the viewer\'s eye first.',
+        imageUrl: 'https://via.placeholder.com/400x300/FF6B9E/FFFFFF?text=Focal+Points',
+      ),
+      TutorialStep(
+        id: 'step-3',
+        title: 'Visual Hierarchy',
+        description: 'Arrange elements to guide the viewer through your composition logically.',
+        imageUrl: 'https://via.placeholder.com/400x300/95A5A6/FFFFFF?text=Visual+Hierarchy',
+      ),
+      TutorialStep(
+        id: 'step-4',
+        title: 'Balance and Weight',
+        description: 'Achieve visual balance through the strategic placement of elements.',
+        imageUrl: 'https://via.placeholder.com/400x300/2D3436/FFFFFF?text=Balance+Weight',
+      ),
+    ],
+  ),
+  'gallery-4': Tutorial(
+    id: 'gallery-4',
+    title: 'Watercolor Mastery',
+    steps: [
+      TutorialStep(
+        id: 'step-1',
+        title: 'Paper Selection',
+        description: 'Choose the right watercolor paper for your technique and desired effects.',
+        imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Paper+Selection',
+      ),
+      TutorialStep(
+        id: 'step-2',
+        title: 'Wet-on-Wet Technique',
+        description: 'Master the wet-on-wet technique for soft, blended effects.',
+        imageUrl: 'https://via.placeholder.com/400x300/FF6B9E/FFFFFF?text=Wet+on+Wet',
+      ),
+      TutorialStep(
+        id: 'step-3',
+        title: 'Layering Colors',
+        description: 'Build depth by layering transparent watercolor washes.',
+        imageUrl: 'https://via.placeholder.com/400x300/95A5A6/FFFFFF?text=Layering+Colors',
+      ),
+      TutorialStep(
+        id: 'step-4',
+        title: 'Detail Work',
+        description: 'Add fine details and textures once the base layers are dry.',
+        imageUrl: 'https://via.placeholder.com/400x300/2D3436/FFFFFF?text=Detail+Work',
+      ),
+      TutorialStep(
+        id: 'step-5',
+        title: 'Correcting Mistakes',
+        description: 'Learn techniques to fix common watercolor mistakes and imperfections.',
+        imageUrl: 'https://via.placeholder.com/400x300/6B9EFF/FFFFFF?text=Correcting+Mistakes',
+      ),
+    ],
+  ),
+};
 
 class TutorialDetailPage extends StatefulWidget {
   final String tutorialId;
@@ -103,7 +237,7 @@ class _TutorialDetailPageState extends State<TutorialDetailPage> {
   void initState() {
     super.initState();
     // In a real app, you'd fetch the tutorial by ID
-    tutorial = sampleTutorial;
+    tutorial = tutorialsData[widget.tutorialId] ?? tutorialsData.values.first;
     currentStepIndex = widget.initialStep.clamp(0, tutorial.steps.length - 1);
   }
 

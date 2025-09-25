@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
 
@@ -11,58 +12,52 @@ class GalleryPage extends StatefulWidget {
 
 class _GalleryPageState extends State<GalleryPage> {
   String _selectedCategory = 'All';
-  final List<String> _categories = ['All', 'Portraits', 'Landscapes', 'Abstract', 'Digital', 'Traditional'];
+  final List<String> _categories = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
-  final List<Map<String, dynamic>> _artworks = [
+  final List<Map<String, dynamic>> _tutorials = [
     {
-      'id': '1',
-      'title': 'Portrait Study',
-      'artist': 'Sarah_Artist',
-      'likes': 24,
-      'category': 'Portraits',
+      'id': 'gallery-1',
+      'title': 'Advanced Shading Techniques',
+      'description': 'Master the art of creating depth with shadows',
+      'author': 'Shadow_Master',
+      'level': 'Advanced',
+      'duration': '75 min',
+      'isOfficial': false,
     },
     {
-      'id': '2',
-      'title': 'Mountain View',
-      'artist': 'Mike_Draws',
-      'likes': 18,
-      'category': 'Landscapes',
+      'id': 'gallery-2',
+      'title': 'Digital Painting Basics',
+      'description': 'Introduction to digital art tools and techniques',
+      'author': 'Digital_Artist',
+      'level': 'Beginner',
+      'duration': '50 min',
+      'isOfficial': false,
     },
     {
-      'id': '3',
-      'title': 'Color Experiment',
-      'artist': 'Emma_Art',
-      'likes': 32,
-      'category': 'Abstract',
+      'id': 'gallery-3',
+      'title': 'Composition and Balance',
+      'description': 'Learn to create visually appealing artwork',
+      'author': 'Composition_Expert',
+      'level': 'Intermediate',
+      'duration': '40 min',
+      'isOfficial': true,
     },
     {
-      'id': '4',
-      'title': 'Digital Portrait',
-      'artist': 'Alex_Digital',
-      'likes': 15,
-      'category': 'Digital',
-    },
-    {
-      'id': '5',
-      'title': 'Watercolor Landscape',
-      'artist': 'Nature_Lover',
-      'likes': 28,
-      'category': 'Traditional',
-    },
-    {
-      'id': '6',
-      'title': 'Abstract Forms',
-      'artist': 'Modern_Artist',
-      'likes': 41,
-      'category': 'Abstract',
+      'id': 'gallery-4',
+      'title': 'Watercolor Mastery',
+      'description': 'Advanced watercolor techniques and tips',
+      'author': 'Watercolor_Pro',
+      'level': 'Advanced',
+      'duration': '85 min',
+      'isOfficial': false,
     },
   ];
 
-  List<Map<String, dynamic>> get _filteredArtworks {
+  List<Map<String, dynamic>> get _filteredTutorials {
     if (_selectedCategory == 'All') {
-      return _artworks;
+      return _tutorials;
     }
-    return _artworks.where((artwork) => artwork['category'] == _selectedCategory).toList();
+    return _tutorials.where((tutorial) => tutorial['level'] == _selectedCategory).toList();
   }
 
   @override
@@ -139,9 +134,9 @@ class _GalleryPageState extends State<GalleryPage> {
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.8,
               ),
-              itemCount: _filteredArtworks.length,
+              itemCount: _filteredTutorials.length,
               itemBuilder: (context, index) {
-                return _buildArtworkCard(_filteredArtworks[index]);
+                return _buildTutorialCard(_filteredTutorials[index]);
               },
             ),
           ),
@@ -150,82 +145,134 @@ class _GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  Widget _buildArtworkCard(Map<String, dynamic> artwork) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300, width: 1),
-      ),
-      elevation: 0,
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              ),
-              child: const Icon(
-                Icons.image,
-                size: 48,
-                color: AppTheme.primaryBlue,
-              ),
-            ),
-          ),
-
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    artwork['title'],
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: AppTheme.textPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'by ${artwork['artist']}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.favorite,
-                        size: 16,
-                        color: AppTheme.primaryPink,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${artwork['likes']}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textLight,
-                        ),
-                      ),
+  Widget _buildTutorialCard(Map<String, dynamic> tutorial) {
+    return InkWell(
+      onTap: () {
+        // Navigate to tutorial detail page
+        context.go('/tutorial/${tutorial['id']}');
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.grey.shade300, width: 1),
+        ),
+        elevation: 0,
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 3,
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primaryBlue.withOpacity(0.3),
+                      AppTheme.primaryPink.withOpacity(0.3),
                     ],
                   ),
-                ],
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                ),
+                child: const Icon(
+                  Icons.play_circle_outline,
+                  size: 48,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-        ],
+
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            tutorial['title'],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: AppTheme.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (tutorial['isOfficial'])
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryBlue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Text(
+                              'OFFICIAL',
+                              style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryBlue,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      tutorial['description'],
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            tutorial['level'],
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: AppTheme.primaryBlue,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          Icons.access_time,
+                          size: 12,
+                          color: AppTheme.textLight,
+                        ),
+                        const SizedBox(width: 2),
+                        Text(
+                          tutorial['duration'],
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: AppTheme.textLight,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
