@@ -24,11 +24,12 @@ class WelcomePage extends StatelessWidget {
                   color: AppTheme.primaryBlue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.brush,
-                    size: 80,
-                    color: AppTheme.primaryBlue,
+                child: Center(
+                  child: Image.asset(
+                    'logo/logo.png',
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),

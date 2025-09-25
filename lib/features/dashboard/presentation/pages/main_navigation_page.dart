@@ -215,10 +215,11 @@ class DashboardPage extends StatelessWidget {
                 color: AppTheme.primaryBlue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                Icons.palette,
-                size: 20,
-                color: AppTheme.primaryBlue,
+              child: Image.asset(
+                'images/logo.png',
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
               ),
             ),
             const SizedBox(width: 12),
@@ -257,7 +258,8 @@ class DashboardPage extends StatelessWidget {
       // Official tutorial progress
       {
         'type': 'tutorial',
-        'title': 'Step 1: Begin with a light sketch of the basic shapes. Focus on proportions and overall composition.',
+        'title': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['title'],
+        'description': 'Step 1: Begin with a light sketch of the basic shapes. Focus on proportions and overall composition.',
         'image': 'images/perspective.png',
         'author': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['author'],
         'isOfficial': true,
@@ -267,6 +269,7 @@ class DashboardPage extends StatelessWidget {
       {
         'type': 'gallery',
         'title': userTutorials.first['title'],
+        'description': userTutorials.first['description'],
         'image': 'images/perspective.png',
         'author': userTutorials.first['author'],
         'isOfficial': false,
@@ -275,7 +278,8 @@ class DashboardPage extends StatelessWidget {
       // Another official tutorial
       {
         'type': 'tutorial',
-        'title': 'Dibujo con Perspectiva - Paso 2 de 7',
+        'title': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['title'],
+        'description': 'Dibujo con Perspectiva - Paso 2 de 7',
         'image': 'images/perspective.png',
         'author': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['author'],
         'isOfficial': true,
@@ -285,6 +289,7 @@ class DashboardPage extends StatelessWidget {
       {
         'type': 'gallery',
         'title': userTutorials[1]['title'],
+        'description': userTutorials[1]['description'],
         'image': 'images/perspective.png',
         'author': userTutorials[1]['author'],
         'isOfficial': false,
@@ -294,6 +299,7 @@ class DashboardPage extends StatelessWidget {
       {
         'type': 'tutorial',
         'title': officialTutorials.firstWhere((t) => t['id'] == '3')['title'],
+        'description': officialTutorials.firstWhere((t) => t['id'] == '3')['description'],
         'image': 'images/perspective.png',
         'author': officialTutorials.firstWhere((t) => t['id'] == '3')['author'],
         'isOfficial': true,
@@ -319,6 +325,7 @@ class DashboardPage extends StatelessWidget {
             return _buildTutorialCard(
               context,
               item['title'] as String,
+              item['description'] as String,
               item['image'] as String?,
               item['author'] as String,
               item['isOfficial'] as bool,
@@ -328,6 +335,7 @@ class DashboardPage extends StatelessWidget {
             return _buildGalleryCard(
               context,
               item['title'] as String,
+              item['description'] as String,
               item['image'] as String?,
               item['author'] as String,
               item['likes'] as int,
@@ -343,11 +351,12 @@ class DashboardPage extends StatelessWidget {
       itemCount: mixedContent.length,
       itemBuilder: (context, index) {
         final item = mixedContent[index];
-        
+
         if (item['type'] == 'tutorial') {
           return _buildTutorialCard(
             context,
             item['title'] as String,
+            item['description'] as String,
             item['image'] as String?,
             item['author'] as String,
             item['isOfficial'] as bool,
@@ -357,6 +366,7 @@ class DashboardPage extends StatelessWidget {
           return _buildGalleryCard(
             context,
             item['title'] as String,
+            item['description'] as String,
             item['image'] as String?,
             item['author'] as String,
             item['likes'] as int,
@@ -366,12 +376,13 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTutorialCard(BuildContext context, String title, String? imageUrl, String author, bool isOfficial, double progress) {
+  Widget _buildTutorialCard(BuildContext context, String title, String description, String? imageUrl, String author, bool isOfficial, double progress) {
     final cardHeight = ResponsiveHelper.isDesktop(context) ? 180.0 : 120.0;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -409,115 +420,32 @@ class DashboardPage extends StatelessWidget {
                     ),
                   ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                      child: Icon(
-                        Icons.person,
-                        size: 16,
-                        color: AppTheme.primaryBlue,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        author,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                    ),
-                    if (isOfficial) ...[ 
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryBlue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'OFFICIAL',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryBlue,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 12),
-                
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                     color: AppTheme.textPrimary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppTheme.textSecondary,
                     height: 1.4,
                   ),
                   maxLines: ResponsiveHelper.isDesktop(context) ? 3 : 2,
                   overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 12),
-                
-                if (progress > 0) ...[ 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          backgroundColor: Colors.grey[200],
-                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${(progress * 100).toInt()}%',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: progress > 0 ? AppTheme.primaryPink : AppTheme.primaryBlue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(progress > 0 ? 'Continue' : 'Start'),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.favorite_border),
-                      onPressed: () {},
-                      color: AppTheme.textLight,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.bookmark_border),
-                      onPressed: () {},
-                      color: AppTheme.textLight,
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -527,12 +455,13 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildGalleryCard(BuildContext context, String title, String? imageUrl, String author, int likes) {
+  Widget _buildGalleryCard(BuildContext context, String title, String description, String? imageUrl, String author, int likes) {
     final cardHeight = ResponsiveHelper.isDesktop(context) ? 180.0 : 120.0;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -570,83 +499,32 @@ class DashboardPage extends StatelessWidget {
                     ),
                   ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: AppTheme.primaryPink.withOpacity(0.1),
-                      child: Icon(
-                        Icons.person,
-                        size: 16,
-                        color: AppTheme.primaryPink,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        author,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                     color: AppTheme.textPrimary,
                   ),
-                  maxLines: ResponsiveHelper.isDesktop(context) ? 2 : 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 12),
-                
-                Row(
-                  children: [
-                    Icon(
-                      Icons.favorite,
-                      size: 20,
-                      color: AppTheme.primaryPink,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$likes',
-                      style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.comment_outlined,
-                      size: 20,
-                      color: AppTheme.textLight,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${likes ~/ 3}',
-                      style: TextStyle(
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.share),
-                      onPressed: () {},
-                      color: AppTheme.textLight,
-                    ),
-                  ],
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppTheme.textSecondary,
+                    height: 1.4,
+                  ),
+                  maxLines: ResponsiveHelper.isDesktop(context) ? 3 : 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

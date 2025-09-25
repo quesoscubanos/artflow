@@ -4,8 +4,24 @@ import 'package:go_router/go_router.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final _displayNameController = TextEditingController(text: 'Art Lover');
+  final _biographyController = TextEditingController(text: 'Passionate about learning art and exploring different techniques. Love watercolor and sketching!');
+  String _artisticLevel = 'Beginner';
+
+  @override
+  void dispose() {
+    _displayNameController.dispose();
+    _biographyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,172 +39,108 @@ class ProfilePage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: AppTheme.textSecondary),
-            onPressed: () {
-              _showSettingsDialog(context);
-            },
+            icon: const Icon(Icons.logout, color: AppTheme.errorColor),
+            onPressed: _logout,
+          ),
+          TextButton(
+            onPressed: _saveProfile,
+            child: const Text(
+              'Save',
+              style: TextStyle(
+                color: AppTheme.primaryBlue,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppTheme.primaryBlue, AppTheme.primaryPink],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Column(
+            Center(
+              child: Stack(
                 children: [
                   const CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.white,
+                    radius: 60,
+                    backgroundColor: Colors.grey,
                     child: Icon(
                       Icons.person,
-                      size: 48,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  const Text(
-                    'Art Lover',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      size: 60,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    '@artlover',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppTheme.primaryBlue,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildStatColumn('Artworks', '12'),
-                      _buildStatColumn('Followers', '156'),
-                      _buildStatColumn('Following', '89'),
-                    ],
                   ),
                 ],
               ),
             ),
-            
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'About',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Passionate about learning art and exploring different techniques. Love watercolor and sketching!',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.textSecondary,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  const Text(
-                    'Interests',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: ['Watercolor', 'Sketching', 'Digital Art', 'Portraits']
-                        .map((interest) => Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryBlue.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Text(
-                                interest,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppTheme.primaryBlue,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  const Text(
-                    'Recent Artworks',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: 6,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppTheme.primaryBlue.withOpacity(0.3),
-                              AppTheme.primaryPink.withOpacity(0.3),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.image,
-                            size: 32,
-                            color: Colors.white,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+            const SizedBox(height: 24),
+            TextField(
+              controller: _displayNameController,
+              decoration: const InputDecoration(
+                labelText: 'Display Name',
+                border: OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _biographyController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Biography',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _artisticLevel,
+              decoration: const InputDecoration(
+                labelText: 'Artistic Level',
+                border: OutlineInputBorder(),
+              ),
+              items: ['Beginner', 'Intermediate', 'Advanced']
+                  .map((level) => DropdownMenuItem(
+                        value: level,
+                        child: Text(level),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  _artisticLevel = value!;
+                });
+              },
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _saveProfile() {
+    // TODO: Implement save logic
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profile saved!')),
+    );
+  }
+
+  void _logout() {
+    context.read<AuthBloc>().add(AuthLogoutRequested());
+    context.go('/welcome');
   }
 
   Widget _buildStatColumn(String label, String value) {

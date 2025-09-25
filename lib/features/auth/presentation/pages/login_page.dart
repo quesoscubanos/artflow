@@ -71,10 +71,11 @@ class _LoginPageState extends State<LoginPage> {
                             color: AppTheme.primaryBlue.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(
-                            Icons.palette,
-                            size: 30,
-                            color: AppTheme.primaryBlue,
+                          child: Image.asset(
+                            'logo/logo.png',
+                            width: 30,
+                            height: 30,
+                            fit: BoxFit.contain,
                           ),
                         ),
                         const SizedBox(height: 24),

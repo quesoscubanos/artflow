@@ -31,10 +31,11 @@ class SplashPage extends StatelessWidget {
                   color: AppTheme.primaryBlue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: Icon(
-                  Icons.palette,
-                  size: 60,
-                  color: AppTheme.primaryBlue,
+                child: Image.asset(
+                  'images/logo.png',
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 24),
