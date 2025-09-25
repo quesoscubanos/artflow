@@ -21,14 +21,14 @@ class WelcomePage extends StatelessWidget {
               Container(
                 height: 200,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
                   child: Image.asset(
                     'logo/logo.png',
-                    width: 80,
-                    height: 80,
+                    width: 150,
+                    height: 150,
                     fit: BoxFit.contain,
                   ),
                 ),

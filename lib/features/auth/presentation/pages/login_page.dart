@@ -65,16 +65,16 @@ class _LoginPageState extends State<LoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(
-                          width: 60,
-                          height: 60,
+                          width: 80,
+                          height: 80,
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue.withOpacity(0.1),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Image.asset(
                             'logo/logo.png',
-                            width: 30,
-                            height: 30,
+                            width: 70,
+                            height: 70,
                             fit: BoxFit.contain,
                           ),
                         ),
