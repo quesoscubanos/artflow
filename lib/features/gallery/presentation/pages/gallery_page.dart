@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
+import 'package:artflowrise/features/gallery/presentation/pages/gallery_tutorial_detail_page.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -78,8 +79,10 @@ class _GalleryPageState extends State<GalleryPage> {
           IconButton(
             icon: const Icon(Icons.add, color: AppTheme.textSecondary),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Upload feature coming soon!')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const GalleryTutorialDetailPage(),
+                ),
               );
             },
           ),
