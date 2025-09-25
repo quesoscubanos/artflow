@@ -16,13 +16,16 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -86,8 +89,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
                             }
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                              return 'Please enter a valid email';
+                            if (!RegExp(r'^[\w-\.]+@gmail\.com$').hasMatch(value)) {
+                              return 'Please enter a valid Gmail address';
                             }
                             return null;
                           },
@@ -133,14 +136,55 @@ class _RegisterPageState extends State<RegisterPage> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter a password';
                             }
-                            if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
+                            if (value.length < 8) {
+                              return 'Password must be at least 8 characters';
+                            }
+                            if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                              return 'Password must contain at least one uppercase letter';
+                            }
+                            if (!RegExp(r'[a-z]').hasMatch(value)) {
+                              return 'Password must contain at least one lowercase letter';
+                            }
+                            if (!RegExp(r'[0-9]').hasMatch(value)) {
+                              return 'Password must contain at least one number';
+                            }
+                            if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                              return 'Password must contain at least one symbol';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscureConfirmPassword,
+                          decoration: InputDecoration(
+                            labelText: 'Confirm Password',
+                            hintText: 'Confirm your password',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                                });
+                              },
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please confirm your password';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Passwords do not match';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 32),
-                        
+
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return ElevatedButton(

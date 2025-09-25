@@ -16,17 +16,17 @@ class MockUser {
 }
 
 // Default users for testing
-const List<MockUser> _mockUsers = [
+final List<MockUser> _users = [
   MockUser(
-    email: 'user@example.com',
-    password: 'password',
-    username: 'Regular User',
+    email: 'usuario1@gmail.com',
+    password: 'P@ssw0rd1!',
+    username: 'User1',
     isAdmin: false,
   ),
   MockUser(
-    email: 'admin@example.com',
-    password: 'admin123',
-    username: 'Admin User',
+    email: 'admin@gmail.com',
+    password: 'AdminP@ss1!',
+    username: 'Admin',
     isAdmin: true,
   ),
 ];
@@ -96,8 +96,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onAuthLoginRequested(AuthLoginRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      // Check against mock users
-      final user = _mockUsers.firstWhere(
+      // Check against users
+      final user = _users.firstWhere(
         (user) => user.email == event.email && user.password == event.password,
         orElse: () => throw Exception('Invalid credentials'),
       );
@@ -113,7 +113,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       // Check if user already exists
-      final existingUser = _mockUsers.firstWhere(
+      final existingUser = _users.firstWhere(
         (user) => user.email == event.email,
         orElse: () => MockUser(email: '', password: '', username: '', isAdmin: false),
       );
@@ -122,8 +122,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         throw Exception('User already exists');
       }
 
-      // For demo purposes, create a new regular user
-      print('Registering user: ${event.username}, ${event.email}');
+      // Add new user
+      _users.add(MockUser(
+        email: event.email,
+        password: event.password,
+        username: event.username,
+        isAdmin: false,
+      ));
+
+      print('Registered user: ${event.username}, ${event.email}');
       await Future.delayed(const Duration(seconds: 1)); // Simulate API call
       emit(AuthAuthenticated(isAdmin: false, username: event.username));
     } catch (e) {
