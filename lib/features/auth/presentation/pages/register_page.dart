@@ -81,6 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
+                          textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
                             labelText: 'Email',
                             hintText: 'Enter your email',
@@ -99,6 +100,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         
                         TextFormField(
                           controller: _usernameController,
+                          textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
                             labelText: 'Username',
                             hintText: 'Choose a username',
@@ -118,6 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
+                          textDirection: TextDirection.ltr,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             hintText: 'Create a password',
@@ -159,6 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         TextFormField(
                           controller: _confirmPasswordController,
                           obscureText: _obscureConfirmPassword,
+                          textDirection: TextDirection.ltr,
                           decoration: InputDecoration(
                             labelText: 'Confirm Password',
                             hintText: 'Confirm your password',

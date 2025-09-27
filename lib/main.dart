@@ -42,6 +42,11 @@ class ArtFlowRiseApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
+        locale: const Locale('en', 'US'),
+        supportedLocales: const [Locale('en', 'US')],
+        localeResolutionCallback: (locale, supportedLocales) {
+          return const Locale('en', 'US');
+        },
       ),
     );
   }

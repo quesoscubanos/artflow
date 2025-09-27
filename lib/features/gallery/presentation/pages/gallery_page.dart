@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
 import 'package:artflowrise/features/gallery/presentation/pages/gallery_tutorial_detail_page.dart';
+import 'package:artflowrise/features/gallery/presentation/pages/user_publication_detail_page.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
 
 class GalleryPage extends StatefulWidget {
@@ -123,8 +124,18 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget _buildTutorialCard(Map<String, dynamic> tutorial) {
     return InkWell(
       onTap: () {
-        // Navigate to tutorial detail page
-        context.go('/tutorial/${tutorial['id']}');
+        // Navigate to appropriate detail page
+        if (tutorial['isOfficial'] == false && tutorial['images'] != null) {
+          // User publication with images
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => UserPublicationDetailPage(publication: tutorial),
+            ),
+          );
+        } else {
+          // Official tutorial
+          context.go('/tutorial/${tutorial['id']}');
+        }
       },
       borderRadius: BorderRadius.circular(12),
       child: Card(
@@ -148,26 +159,26 @@ class _GalleryPageState extends State<GalleryPage> {
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                   child: tutorial['images'] != null && (tutorial['images'] as List).isNotEmpty
-                      ? Image.file(
-                          File((tutorial['images'] as List).first),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'images/perspective.png',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: AppTheme.primaryBlue.withOpacity(0.1),
-                                  child: const Icon(
-                                    Icons.image,
-                                    size: 48,
-                                    color: AppTheme.primaryBlue,
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        )
+                        ? Image.file(
+                            File((tutorial['images'] as List<Map<String, String>>).first['path']!),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'images/perspective.png',
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                                    child: const Icon(
+                                      Icons.image,
+                                      size: 48,
+                                      color: AppTheme.primaryBlue,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          )
                       : Image.asset(
                           'images/perspective.png',
                           fit: BoxFit.cover,
@@ -198,6 +209,7 @@ class _GalleryPageState extends State<GalleryPage> {
                         Expanded(
                           child: Text(
                             tutorial['title'],
+                            textDirection: TextDirection.ltr,
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
@@ -228,6 +240,7 @@ class _GalleryPageState extends State<GalleryPage> {
                     const SizedBox(height: 4),
                     Text(
                       tutorial['description'],
+                      textDirection: TextDirection.ltr,
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppTheme.textSecondary,

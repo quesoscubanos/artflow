@@ -95,6 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                         // Username field
                         TextFormField(
                           controller: _usernameController,
+                          textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
                             hintText: 'Username',
                             border: OutlineInputBorder(),
@@ -112,6 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
+                          textDirection: TextDirection.ltr,
                           decoration: InputDecoration(
                             hintText: 'Password',
                             border: const OutlineInputBorder(),

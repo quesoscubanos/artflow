@@ -19,7 +19,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
   String _selectedCategory = 'Drawing';
   String _selectedDifficulty = 'Beginner';
   final List<String> _selectedTags = [];
-  final List<String> _uploadedImages = []; // Holds image file paths
+  final List<Map<String, String>> _uploadedImages = []; // Holds {'path': filePath, 'description': description}
 
   final List<String> _categories = [
     'Drawing',
@@ -112,7 +112,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
         }
 
         setState(() {
-          _uploadedImages.add(image.path);
+          _uploadedImages.add({'path': image.path, 'description': ''});
         });
         addedCount++;
       }
@@ -169,7 +169,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
       'level': _selectedDifficulty,
       'duration': 'TBD', // Could be calculated or user input
       'isOfficial': false,
-      'images': _uploadedImages, // Store the image paths
+      'images': _uploadedImages, // Store the image data with descriptions
     };
 
     userTutorials.add(newTutorial);
@@ -217,6 +217,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
             const SizedBox(height: 8),
             TextField(
               controller: _titleController,
+              textDirection: TextDirection.ltr,
               decoration: InputDecoration(
                 hintText: 'Enter a short, descriptive title',
                 border: OutlineInputBorder(
@@ -250,6 +251,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
             TextField(
               controller: _descriptionController,
               maxLines: 4,
+              textDirection: TextDirection.ltr,
               decoration: InputDecoration(
                 hintText: 'Provide details about your tutorial',
                 border: OutlineInputBorder(
@@ -279,53 +281,108 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 80,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _uploadedImages.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: 80,
-                      height: 80,
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        image: DecorationImage(
-                          image: FileImage(File(_uploadedImages[index])),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: 4,
-                            right: 4,
-                            child: GestureDetector(
-                              onTap: () {
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _uploadedImages.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                image: DecorationImage(
+                                  image: FileImage(File(_uploadedImages[index]['path']!)),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Image ${index + 1}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _uploadedImages[index]['description']!.isEmpty
+                                        ? 'No description added'
+                                        : _uploadedImages[index]['description']!,
+                                    textDirection: TextDirection.ltr,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: _uploadedImages[index]['description']!.isEmpty
+                                          ? AppTheme.textLight
+                                          : AppTheme.textSecondary,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
                                 setState(() {
                                   _uploadedImages.removeAt(index);
                                 });
                               },
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(
-                                  color: Colors.black54,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.close,
-                                  size: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              iconSize: 20,
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          initialValue: _uploadedImages[index]['description'],
+                          textDirection: TextDirection.ltr,
+                          textInputAction: TextInputAction.done,
+                          decoration: InputDecoration(
+                            hintText: 'Add description for this image',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                          maxLines: 2,
+                          onChanged: (value) {
+                            _uploadedImages[index]['description'] = value;
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
             const SizedBox(height: 24),
@@ -480,6 +537,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
                 Expanded(
                   child: TextField(
                     controller: _tagsController,
+                    textDirection: TextDirection.ltr,
                     decoration: InputDecoration(
                       hintText: 'Add tags to help others find your tutorial',
                       border: OutlineInputBorder(
