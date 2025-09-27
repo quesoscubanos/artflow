@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
@@ -23,6 +24,13 @@ class _GalleryPageState extends State<GalleryPage> {
       return _tutorials;
     }
     return _tutorials.where((tutorial) => tutorial['level'] == _selectedCategory).toList();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh when coming back from detail page
+    setState(() {});
   }
 
   @override
@@ -139,20 +147,41 @@ class _GalleryPageState extends State<GalleryPage> {
                 ),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: Image.asset(
-                    'images/perspective.png',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: AppTheme.primaryBlue.withOpacity(0.1),
-                        child: const Icon(
-                          Icons.image,
-                          size: 48,
-                          color: AppTheme.primaryBlue,
+                  child: tutorial['images'] != null && (tutorial['images'] as List).isNotEmpty
+                      ? Image.file(
+                          File((tutorial['images'] as List).first),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'images/perspective.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                                  child: const Icon(
+                                    Icons.image,
+                                    size: 48,
+                                    color: AppTheme.primaryBlue,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        )
+                      : Image.asset(
+                          'images/perspective.png',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: AppTheme.primaryBlue.withOpacity(0.1),
+                              child: const Icon(
+                                Icons.image,
+                                size: 48,
+                                color: AppTheme.primaryBlue,
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                 ),
               ),
             ),

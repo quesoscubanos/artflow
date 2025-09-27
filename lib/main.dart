@@ -5,6 +5,7 @@ import 'package:artflowrise/core/di/injection_container.dart';
 import 'package:artflowrise/core/router/app_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,9 @@ class ArtFlowRiseApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested()),
+        ),
+        BlocProvider(
+          create: (_) => getIt<TutorialsBloc>()..add(LoadTutorials()),
         ),
       ],
       child: MaterialApp.router(

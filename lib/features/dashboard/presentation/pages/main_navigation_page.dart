@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
+import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
 
 class MainNavigationPage extends StatefulWidget {
   final Widget child; 
@@ -201,71 +204,76 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Image.asset(
-                'images/logo.png',
-                width: 20,
-                height: 20,
-                fit: BoxFit.contain,
-              ),
+    return BlocBuilder<TutorialsBloc, TutorialsState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            title: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Image.asset(
+                    'logo/logo.png',
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'ArtFlowRise',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            const Text(
-              'DrawIt',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.help_outline),
+                onPressed: () {},
+                color: AppTheme.textSecondary,
               ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {},
-            color: AppTheme.textSecondary,
+            ],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: ResponsiveHelper.getResponsivePadding(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildMixedContentFeed(context),
-          ],
-        ),
-      ),
+          body: SingleChildScrollView(
+            padding: ResponsiveHelper.getResponsivePadding(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildMixedContentFeed(context, state),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildMixedContentFeed(BuildContext context) {
+  Widget _buildMixedContentFeed(BuildContext context, TutorialsState state) {
+    final tutorials = state is TutorialsLoaded ? state.tutorials : [];
     final mixedContent = [
-      // Official tutorial progress
-      {
+      // Dynamic tutorials from BLoC
+      ...tutorials.map((tutorial) => {
         'type': 'tutorial',
-        'title': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['title'],
-        'description': 'Step 1: Begin with a light sketch of the basic shapes. Focus on proportions and overall composition.',
-        'image': 'images/perspective.png',
-        'author': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['author'],
-        'isOfficial': true,
-        'progress': 0.2,
-      },
-      // User gallery item
+        'title': tutorial['title'],
+        'description': tutorial['description'],
+        'image': tutorial['imagePath'] ?? 'images/perspective.png',
+        'author': tutorial['author'],
+        'isOfficial': tutorial['isOfficial'],
+        'progress': 0.0,
+      }),
+      // Static gallery items for demo
       {
         'type': 'gallery',
         'title': userTutorials.first['title'],
@@ -275,17 +283,6 @@ class DashboardPage extends StatelessWidget {
         'isOfficial': false,
         'likes': 24,
       },
-      // Another official tutorial
-      {
-        'type': 'tutorial',
-        'title': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['title'],
-        'description': 'Dibujo con Perspectiva - Paso 2 de 7',
-        'image': 'images/perspective.png',
-        'author': officialTutorials.firstWhere((t) => t['id'] == 'perspective-drawing')['author'],
-        'isOfficial': true,
-        'progress': 0.3,
-      },
-      // Another user gallery item
       {
         'type': 'gallery',
         'title': userTutorials[1]['title'],
@@ -294,16 +291,6 @@ class DashboardPage extends StatelessWidget {
         'author': userTutorials[1]['author'],
         'isOfficial': false,
         'likes': 18,
-      },
-      // Another official tutorial
-      {
-        'type': 'tutorial',
-        'title': officialTutorials.firstWhere((t) => t['id'] == '3')['title'],
-        'description': officialTutorials.firstWhere((t) => t['id'] == '3')['description'],
-        'image': 'images/perspective.png',
-        'author': officialTutorials.firstWhere((t) => t['id'] == '3')['author'],
-        'isOfficial': true,
-        'progress': 0.0,
       },
     ];
 
@@ -393,11 +380,11 @@ class DashboardPage extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               color: Colors.grey[100],
             ),
-            child: imageUrl != null
+            child: imageUrl != null && imageUrl.isNotEmpty
                 ? ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Image.asset(
-                      imageUrl,
+                    child: Image.file(
+                      File(imageUrl),
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(

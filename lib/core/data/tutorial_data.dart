@@ -40,8 +40,8 @@ final List<Map<String, dynamic>> officialTutorials = [
   },
 ];
 
-// User-uploaded tutorials (gallery)
-final List<Map<String, dynamic>> userTutorials = [
+// User-uploaded tutorials (gallery) - mutable for new uploads
+List<Map<String, dynamic>> userTutorials = [
   {
     'id': 'gallery-1',
     'title': 'Advanced Shading Techniques',

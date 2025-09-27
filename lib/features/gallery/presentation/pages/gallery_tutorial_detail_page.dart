@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
 
 class GalleryTutorialDetailPage extends StatefulWidget {
   const GalleryTutorialDetailPage({super.key});
@@ -9,13 +12,14 @@ class GalleryTutorialDetailPage extends StatefulWidget {
 }
 
 class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
+  final ImagePicker _picker = ImagePicker();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _tagsController = TextEditingController();
   String _selectedCategory = 'Drawing';
   String _selectedDifficulty = 'Beginner';
   final List<String> _selectedTags = [];
-  final List<String> _uploadedImages = []; // In real app, this would hold image paths
+  final List<String> _uploadedImages = []; // Holds image file paths
 
   final List<String> _categories = [
     'Drawing',
@@ -56,11 +60,75 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
     });
   }
 
-  void _selectImages() {
-    // In real app, this would open image picker
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Image selection coming soon!')),
-    );
+  Future<void> _selectImages() async {
+    try {
+      final List<XFile> images = await _picker.pickMultiImage();
+      if (images.isEmpty) return;
+
+      // Validate selection count (3-25 per selection)
+      if (images.length < 3) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please select at least 3 images')),
+          );
+        }
+        return;
+      }
+
+      if (images.length > 25) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Maximum 25 images per selection')),
+          );
+        }
+        return;
+      }
+
+      // Check if adding these would exceed total limit
+      final remainingSlots = 25 - _uploadedImages.length;
+      if (images.length > remainingSlots) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Can only add $remainingSlots more images (max 25 total)')),
+          );
+        }
+        return;
+      }
+
+      // Validate each image size and add valid ones
+      int addedCount = 0;
+      for (final image in images) {
+        final file = File(image.path);
+        final fileSize = await file.length();
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+
+        if (fileSize > maxSize) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('${image.name} exceeds 5MB limit - skipped')),
+            );
+          }
+          continue; // Skip this image
+        }
+
+        setState(() {
+          _uploadedImages.add(image.path);
+        });
+        addedCount++;
+      }
+
+      if (mounted && addedCount > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Added $addedCount image(s). Total: ${_uploadedImages.length}/25')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to select images')),
+        );
+      }
+    }
   }
 
   void _publishTutorial() {
@@ -85,7 +153,27 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
       return;
     }
 
-    // In real app, this would save the tutorial
+    if (_uploadedImages.length > 25) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Maximum 25 images allowed')),
+      );
+      return;
+    }
+
+    // Add to user tutorials list
+    final newTutorial = {
+      'id': 'user-${DateTime.now().millisecondsSinceEpoch}',
+      'title': _titleController.text,
+      'description': _descriptionController.text,
+      'author': 'Current User', // In real app, get from auth
+      'level': _selectedDifficulty,
+      'duration': 'TBD', // Could be calculated or user input
+      'isOfficial': false,
+      'images': _uploadedImages, // Store the image paths
+    };
+
+    userTutorials.add(newTutorial);
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Tutorial published successfully!')),
     );
@@ -180,6 +268,66 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
                 fillColor: Colors.grey.shade50,
               ),
             ),
+            if (_uploadedImages.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Selected Images (${_uploadedImages.length}/25)',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 80,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _uploadedImages.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      width: 80,
+                      height: 80,
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        image: DecorationImage(
+                          image: FileImage(File(_uploadedImages[index])),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _uploadedImages.removeAt(index);
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(
+                                  color: Colors.black54,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
             const SizedBox(height: 24),
 
             // Category
@@ -235,7 +383,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Add at least 3 images (max 40). Each image must be under 5 MB.',
+              'Add at least 3 images per selection (max 25 per selection, 25 total). Each image must be under 5 MB.',
               style: TextStyle(
                 fontSize: 14,
                 color: AppTheme.textSecondary,
