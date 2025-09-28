@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
+import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 
 class GalleryTutorialDetailPage extends StatefulWidget {
   const GalleryTutorialDetailPage({super.key});
@@ -160,12 +162,16 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
       return;
     }
 
+    // Get current user from AuthBloc
+    final authState = context.read<AuthBloc>().state;
+    final currentUsername = authState is AuthAuthenticated ? authState.username : 'Unknown User';
+
     // Add to user tutorials list
     final newTutorial = {
       'id': 'user-${DateTime.now().millisecondsSinceEpoch}',
       'title': _titleController.text,
       'description': _descriptionController.text,
-      'author': 'Current User', // In real app, get from auth
+      'author': currentUsername,
       'level': _selectedDifficulty,
       'duration': 'TBD', // Could be calculated or user input
       'isOfficial': false,

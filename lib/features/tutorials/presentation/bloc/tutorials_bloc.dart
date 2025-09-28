@@ -26,6 +26,12 @@ class UploadTutorial extends TutorialsEvent {
   });
 }
 
+class DeleteTutorial extends TutorialsEvent {
+  final String tutorialId;
+
+  DeleteTutorial({required this.tutorialId});
+}
+
 // States
 abstract class TutorialsState {}
 
@@ -93,6 +99,7 @@ class TutorialsBloc extends Bloc<TutorialsEvent, TutorialsState> {
   TutorialsBloc() : super(TutorialsInitial()) {
     on<LoadTutorials>(_onLoadTutorials);
     on<UploadTutorial>(_onUploadTutorial);
+    on<DeleteTutorial>(_onDeleteTutorial);
   }
 
   void _onLoadTutorials(LoadTutorials event, Emitter<TutorialsState> emit) {
@@ -151,6 +158,15 @@ class TutorialsBloc extends Bloc<TutorialsEvent, TutorialsState> {
       emit(TutorialsLoaded(_tutorials));
     } catch (e) {
       emit(TutorialsError('Failed to upload tutorial: ${e.toString()}'));
+    }
+  }
+
+  void _onDeleteTutorial(DeleteTutorial event, Emitter<TutorialsState> emit) {
+    try {
+      _tutorials.removeWhere((tutorial) => tutorial['id'] == event.tutorialId);
+      emit(TutorialsLoaded(_tutorials));
+    } catch (e) {
+      emit(TutorialsError('Failed to delete tutorial: ${e.toString()}'));
     }
   }
 }

@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
 import 'package:artflowrise/features/gallery/presentation/pages/gallery_tutorial_detail_page.dart';
 import 'package:artflowrise/features/gallery/presentation/pages/user_publication_detail_page.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
+import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -31,6 +34,62 @@ class _GalleryPageState extends State<GalleryPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Refresh when coming back from detail page
+    setState(() {});
+  }
+
+  void _showDeleteConfirmation(Map<String, dynamic> tutorial) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Tutorial'),
+          content: Text('Are you sure you want to delete "${tutorial['title']}"? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteTutorial(tutorial);
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteTutorial(Map<String, dynamic> tutorial) {
+    // Remove from userTutorials list
+    userTutorials.removeWhere((t) => t['id'] == tutorial['id']);
+
+    // Update notifier
+    try {
+      userTutorialsNotifier.value = userTutorials;
+    } catch (_) {
+      // Ignore if notifier isn't available
+    }
+
+    // Also update the bloc if available
+    try {
+      final tutorialsBloc = context.read<TutorialsBloc>();
+      tutorialsBloc.add(DeleteTutorial(tutorialId: tutorial['id']));
+    } catch (_) {
+      // Ignore if bloc isn't available
+    }
+
+    // Show success message
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tutorial deleted successfully')),
+      );
+    }
+
+    // Refresh the UI
     setState(() {});
   }
 
@@ -122,6 +181,11 @@ class _GalleryPageState extends State<GalleryPage> {
   }
 
   Widget _buildTutorialCard(Map<String, dynamic> tutorial) {
+    // Get current user
+    final authState = context.read<AuthBloc>().state;
+    final currentUsername = authState is AuthAuthenticated ? authState.username : null;
+    final isOwner = currentUsername != null && tutorial['author'] == currentUsername && tutorial['isOfficial'] == false;
+
     return InkWell(
       onTap: () {
         // Navigate to appropriate detail page
@@ -146,146 +210,165 @@ class _GalleryPageState extends State<GalleryPage> {
         ),
         elevation: 0,
         color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: tutorial['images'] != null && (tutorial['images'] as List).isNotEmpty
-                        ? Image.file(
-                            File((tutorial['images'] as List<Map<String, String>>).first['path']!),
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                'images/perspective.png',
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                      child: tutorial['images'] != null && (tutorial['images'] as List).isNotEmpty
+                            ? Image.file(
+                                File((tutorial['images'] as List<Map<String, String>>).first['path']!),
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: AppTheme.primaryBlue.withOpacity(0.1),
-                                    child: const Icon(
-                                      Icons.image,
-                                      size: 48,
-                                      color: AppTheme.primaryBlue,
-                                    ),
+                                  return Image.asset(
+                                    'images/perspective.png',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                                        child: const Icon(
+                                          Icons.image,
+                                          size: 48,
+                                          color: AppTheme.primaryBlue,
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                          )
-                      : Image.asset(
-                          'images/perspective.png',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: AppTheme.primaryBlue.withOpacity(0.1),
-                              child: const Icon(
-                                Icons.image,
-                                size: 48,
-                                color: AppTheme.primaryBlue,
-                              ),
-                            );
-                          },
-                        ),
+                              )
+                          : Image.asset(
+                              'images/perspective.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                                  child: const Icon(
+                                    Icons.image,
+                                    size: 48,
+                                    color: AppTheme.primaryBlue,
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
 
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            tutorial['title'],
-                            textDirection: TextDirection.ltr,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: AppTheme.textPrimary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (tutorial['isOfficial'])
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryBlue.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              'OFFICIAL',
-                              style: TextStyle(
-                                fontSize: 8,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryBlue,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                tutorial['title'],
+                                textDirection: TextDirection.ltr,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: AppTheme.textPrimary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      tutorial['description'],
-                      textDirection: TextDirection.ltr,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondary,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            tutorial['level'],
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: AppTheme.primaryBlue,
-                            ),
-                          ),
+                            if (tutorial['isOfficial'])
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text(
+                                  'OFFICIAL',
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryBlue,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        const Icon(
-                          Icons.access_time,
-                          size: 12,
-                          color: AppTheme.textLight,
-                        ),
-                        const SizedBox(width: 2),
+                        const SizedBox(height: 4),
                         Text(
-                          tutorial['duration'],
+                          tutorial['description'],
+                          textDirection: TextDirection.ltr,
                           style: const TextStyle(
-                            fontSize: 10,
-                            color: AppTheme.textLight,
+                            fontSize: 12,
+                            color: AppTheme.textSecondary,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryBlue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                tutorial['level'],
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppTheme.primaryBlue,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.access_time,
+                              size: 12,
+                              color: AppTheme.textLight,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              tutorial['duration'],
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: AppTheme.textLight,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
+                ),
+              ],
+            ),
+            // Delete button for owner
+            if (isOwner)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _showDeleteConfirmation(tutorial);
+                  },
+                  iconSize: 20,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
               ),
-            ),
           ],
         ),
       ),
