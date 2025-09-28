@@ -394,10 +394,41 @@ class DashboardPage extends StatelessWidget {
             child: imageUrl != null && imageUrl.isNotEmpty
                 ? ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Image.file(
-                      File(imageUrl),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
+                    child: Builder(builder: (context) {
+                      try {
+                        final file = File(imageUrl);
+                        if (file.existsSync()) {
+                          return Image.file(
+                            file,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryBlue.withOpacity(0.1),
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  size: 48,
+                                  color: AppTheme.textLight,
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          return Image.asset(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryBlue.withOpacity(0.1),
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  size: 48,
+                                  color: AppTheme.textLight,
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      } catch (e) {
                         return Container(
                           color: AppTheme.primaryBlue.withOpacity(0.1),
                           child: Icon(
@@ -406,8 +437,8 @@ class DashboardPage extends StatelessWidget {
                             color: AppTheme.textLight,
                           ),
                         );
-                      },
-                    ),
+                      }
+                    }),
                   )
                 : Container(
                     color: AppTheme.primaryBlue.withOpacity(0.1),
@@ -470,23 +501,54 @@ class DashboardPage extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               color: Colors.grey[100],
             ),
-            child: imageUrl != null
+            child: imageUrl != null && imageUrl.isNotEmpty
                 ? ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Image.asset(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
+                    child: Builder(builder: (context) {
+                      try {
+                        final file = File(imageUrl);
+                        if (file.existsSync()) {
+                          return Image.file(
+                            file,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryPink.withOpacity(0.1),
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  size: 48,
+                                  color: AppTheme.primaryPink,
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          return Image.asset(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryPink.withOpacity(0.1),
+                                child: Icon(
+                                  Icons.image,
+                                  size: 48,
+                                  color: AppTheme.primaryPink,
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      } catch (e) {
                         return Container(
                           color: AppTheme.primaryPink.withOpacity(0.1),
                           child: Icon(
-                            Icons.image,
+                            Icons.image_not_supported,
                             size: 48,
                             color: AppTheme.primaryPink,
                           ),
                         );
-                      },
-                    ),
+                      }
+                    }),
                   )
                 : Container(
                     color: AppTheme.primaryPink.withOpacity(0.1),

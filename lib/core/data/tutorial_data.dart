@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:artflowrise/features/tutorials/presentation/pages/tutorial_detail_page.dart';
 
 // Official tutorials (admin uploaded)
@@ -79,6 +80,11 @@ List<Map<String, dynamic>> userTutorials = [
     'isOfficial': false,
   },
 ];
+
+/// Notifier that exposes the live userTutorials list so other parts of the app
+/// (e.g., dashboard) can listen and react immediately when the gallery changes.
+/// Use `userTutorialsNotifier.value = userTutorials;` after mutating the list.
+final ValueNotifier<List<Map<String, dynamic>>> userTutorialsNotifier = ValueNotifier(userTutorials);
 
 // Combined tutorials for detail page
 final Map<String, Tutorial> allTutorialsData = {

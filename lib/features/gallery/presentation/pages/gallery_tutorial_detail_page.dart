@@ -174,6 +174,13 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
 
     userTutorials.add(newTutorial);
 
+    // Notify listeners so dashboard updates immediately without copying data.
+    try {
+      userTutorialsNotifier.value = userTutorials;
+    } catch (_) {
+      // If for any reason notifier isn't available, ignore to avoid crash.
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Tutorial published successfully!')),
     );
