@@ -7,6 +7,9 @@ import 'package:artflowrise/core/utils/responsive_helper.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
 import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
 
+// Create a ValueNotifier to listen for changes in userTutorials
+final ValueNotifier<List<Map<String, dynamic>>> userTutorialsNotifier = ValueNotifier(userTutorials);
+
 class MainNavigationPage extends StatefulWidget {
   final Widget child; 
   
@@ -261,104 +264,112 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildMixedContentFeed(BuildContext context, TutorialsState state) {
-    final tutorials = state is TutorialsLoaded ? state.tutorials : [];
-    final mixedContent = [
-      // Dynamic tutorials from BLoC
-      ...tutorials.map((tutorial) => {
-        'type': 'tutorial',
-        'title': tutorial['title'],
-        'description': tutorial['description'],
-        'image': tutorial['imagePath'] ?? 'images/perspective.png',
-        'author': tutorial['author'],
-        'isOfficial': tutorial['isOfficial'],
-        'progress': 0.0,
-      }),
-      // Static gallery items for demo
-      {
-        'type': 'gallery',
-        'title': userTutorials.first['title'],
-        'description': userTutorials.first['description'],
-        'image': 'images/perspective.png',
-        'author': userTutorials.first['author'],
-        'isOfficial': false,
-        'likes': 24,
-      },
-      {
-        'type': 'gallery',
-        'title': userTutorials[1]['title'],
-        'description': userTutorials[1]['description'],
-        'image': 'images/perspective.png',
-        'author': userTutorials[1]['author'],
-        'isOfficial': false,
-        'likes': 18,
-      },
-    ];
+    // Listen to the mutable gallery list (userTutorialsNotifier) and the TutorialsBloc state.
+    return ValueListenableBuilder<List<Map<String, dynamic>>>(
+      valueListenable: userTutorialsNotifier,
+      builder: (context, userList, _) {
+        final tutorials = state is TutorialsLoaded ? state.tutorials : [];
 
-    if (ResponsiveHelper.isDesktop(context)) {
-      return GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context, mobile: 1, tablet: 2, desktop: 3),
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: mixedContent.length,
-        itemBuilder: (context, index) {
-          final item = mixedContent[index];
-          
-          if (item['type'] == 'tutorial') {
-            return _buildTutorialCard(
-              context,
-              item['title'] as String,
-              item['description'] as String,
-              item['image'] as String?,
-              item['author'] as String,
-              item['isOfficial'] as bool,
-              item['progress'] as double,
-            );
-          } else {
-            return _buildGalleryCard(
-              context,
-              item['title'] as String,
-              item['description'] as String,
-              item['image'] as String?,
-              item['author'] as String,
-              item['likes'] as int,
-            );
-          }
-        },
-      );
-    }
+        // Build a combined list of references to the original data sources.
+        // Each entry contains a 'type' and a 'source' reference (no deep copy).
+        final List<Map<String, dynamic>> mixedContent = [];
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: mixedContent.length,
-      itemBuilder: (context, index) {
-        final item = mixedContent[index];
+        // Add admin/tutorial items (source is the original tutorial map)
+        for (final t in tutorials) {
+          mixedContent.add({
+            'type': 'tutorial',
+            'source': t,
+          });
+        }
 
-        if (item['type'] == 'tutorial') {
-          return _buildTutorialCard(
-            context,
-            item['title'] as String,
-            item['description'] as String,
-            item['image'] as String?,
-            item['author'] as String,
-            item['isOfficial'] as bool,
-            item['progress'] as double,
-          );
-        } else {
-          return _buildGalleryCard(
-            context,
-            item['title'] as String,
-            item['description'] as String,
-            item['image'] as String?,
-            item['author'] as String,
-            item['likes'] as int,
+        // Add user/gallery items (source is the original user tutorial map)
+        for (final g in userList) {
+          mixedContent.add({
+            'type': 'gallery',
+            'source': g,
+          });
+        }
+
+        // Render using the live sources so any mutation in tutorials or userTutorials
+        // is immediately reflected in the dashboard.
+        if (ResponsiveHelper.isDesktop(context)) {
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context, mobile: 1, tablet: 2, desktop: 3),
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: mixedContent.length,
+            itemBuilder: (context, index) {
+              final item = mixedContent[index];
+              final src = item['source'] as Map<String, dynamic>;
+
+              if (item['type'] == 'tutorial') {
+                return _buildTutorialCard(
+                  context,
+                  src['title'] as String,
+                  src['description'] as String,
+                  src['imagePath'] as String? ?? src['image'] as String?,
+                  src['author'] as String,
+                  src['isOfficial'] as bool,
+                  (src['progress'] ?? 0.0) as double,
+                );
+              } else {
+                // gallery item - may contain 'images' list for previews
+                final imagePreview = (src['images'] != null && (src['images'] as List).isNotEmpty)
+                    ? ((src['images'] as List).first is Map ? (src['images'] as List).first['path'] : (src['images'] as List).first)
+                    : src['image'] as String? ?? 'images/perspective.png';
+
+                return _buildGalleryCard(
+                  context,
+                  src['title'] as String,
+                  src['description'] as String,
+                  imagePreview as String?,
+                  src['author'] as String,
+                  src['likes'] as int? ?? 0,
+                );
+              }
+            },
           );
         }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: mixedContent.length,
+          itemBuilder: (context, index) {
+            final item = mixedContent[index];
+            final src = item['source'] as Map<String, dynamic>;
+
+            if (item['type'] == 'tutorial') {
+              return _buildTutorialCard(
+                context,
+                src['title'] as String,
+                src['description'] as String,
+                src['imagePath'] as String? ?? src['image'] as String?,
+                src['author'] as String,
+                src['isOfficial'] as bool,
+                (src['progress'] ?? 0.0) as double,
+              );
+            } else {
+              final imagePreview = (src['images'] != null && (src['images'] as List).isNotEmpty)
+                  ? ((src['images'] as List).first is Map ? (src['images'] as List).first['path'] : (src['images'] as List).first)
+                  : src['image'] as String? ?? 'images/perspective.png';
+
+              return _buildGalleryCard(
+                context,
+                src['title'] as String,
+                src['description'] as String,
+                imagePreview as String?,
+                src['author'] as String,
+                src['likes'] as int? ?? 0,
+              );
+            }
+          },
+        );
       },
     );
   }
