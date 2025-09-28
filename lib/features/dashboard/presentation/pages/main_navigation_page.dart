@@ -394,51 +394,27 @@ class DashboardPage extends StatelessWidget {
             child: imageUrl != null && imageUrl.isNotEmpty
                 ? ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Builder(builder: (context) {
-                      try {
-                        final file = File(imageUrl);
-                        if (file.existsSync()) {
-                          return Image.file(
-                            file,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: AppTheme.primaryBlue.withOpacity(0.1),
-                                child: Icon(
-                                  Icons.image_not_supported,
-                                  size: 48,
-                                  color: AppTheme.textLight,
-                                ),
-                              );
-                            },
-                          );
-                        } else {
-                          return Image.asset(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: AppTheme.primaryBlue.withOpacity(0.1),
-                                child: Icon(
-                                  Icons.image_not_supported,
-                                  size: 48,
-                                  color: AppTheme.textLight,
-                                ),
-                              );
-                            },
-                          );
-                        }
-                      } catch (e) {
-                        return Container(
-                          color: AppTheme.primaryBlue.withOpacity(0.1),
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 48,
-                            color: AppTheme.textLight,
-                          ),
+                    child: Image.file(
+                      File(imageUrl),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        // If reading the file fails, attempt to load as an asset.
+                        return Image.asset(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error2, stackTrace2) {
+                            return Container(
+                              color: AppTheme.primaryBlue.withOpacity(0.1),
+                              child: Icon(
+                                Icons.image_not_supported,
+                                size: 48,
+                                color: AppTheme.textLight,
+                              ),
+                            );
+                          },
                         );
-                      }
-                    }),
+                      },
+                    ),
                   )
                 : Container(
                     color: AppTheme.primaryBlue.withOpacity(0.1),

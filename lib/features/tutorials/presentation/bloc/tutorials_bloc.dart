@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 // Events
 abstract class TutorialsEvent {}
@@ -112,6 +113,28 @@ class TutorialsBloc extends Bloc<TutorialsEvent, TutorialsState> {
         return;
       }
 
+      // Copy the picked image into the app documents directory so it remains available
+      // across sessions and can be reliably loaded by Image.file on the dashboard.
+      final original = File(event.image.path);
+      String storedPath = event.image.path;
+      try {
+        final ts = DateTime.now().millisecondsSinceEpoch;
+        final parts = event.image.path.split('.');
+        final ext = parts.length > 1 ? parts.last : 'png';
+
+        final appDocDir = await getApplicationDocumentsDirectory();
+        final dir = Directory('${appDocDir.path}/artflowrise_tutorial_images');
+        if (!await dir.exists()) {
+          await dir.create(recursive: true);
+        }
+        final destPath = '${dir.path}/tutorial_$ts.$ext';
+        final copied = await original.copy(destPath);
+        storedPath = copied.path;
+      } catch (_) {
+        // If copy fails, fall back to original picked path
+        storedPath = event.image.path;
+      }
+
       // Add new tutorial
       final newTutorial = {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
@@ -121,7 +144,7 @@ class TutorialsBloc extends Bloc<TutorialsEvent, TutorialsState> {
         'level': event.level,
         'duration': event.duration,
         'isOfficial': true,
-        'imagePath': event.image.path, // Store file path for demo
+        'imagePath': storedPath, // Use copied/stable path
       };
 
       _tutorials.add(newTutorial);

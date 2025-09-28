@@ -406,6 +406,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: _selectedCategory,
+              dropdownColor: Colors.white,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -425,7 +426,10 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
               items: _categories.map((category) {
                 return DropdownMenuItem(
                   value: category,
-                  child: Text(category),
+                  child: Text(
+                    category,
+                    style: const TextStyle(color: Colors.black),
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
@@ -499,6 +503,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: _selectedDifficulty,
+              dropdownColor: Colors.white,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -518,7 +523,10 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
               items: _difficulties.map((difficulty) {
                 return DropdownMenuItem(
                   value: difficulty,
-                  child: Text(difficulty),
+                  child: Text(
+                    difficulty,
+                    style: const TextStyle(color: Colors.black),
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
