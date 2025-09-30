@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 
@@ -12,15 +14,34 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final ImagePicker _picker = ImagePicker();
   final _displayNameController = TextEditingController(text: 'Art Lover');
   final _biographyController = TextEditingController(text: 'Passionate about learning art and exploring different techniques. Love watercolor and sketching!');
   String _artisticLevel = 'Beginner';
+  File? _profileImage;
 
   @override
   void dispose() {
     _displayNameController.dispose();
     _biographyController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickProfileImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() {
+          _profileImage = File(image.path);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to pick image')),
+        );
+      }
+    }
   }
 
   @override
@@ -61,13 +82,19 @@ class _ProfilePageState extends State<ProfilePage> {
             Center(
               child: Stack(
                 children: [
-                  const CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.grey,
-                    child: Icon(
-                      Icons.person,
-                      size: 60,
-                      color: Colors.white,
+                  GestureDetector(
+                    onTap: _pickProfileImage,
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundColor: Colors.grey,
+                      backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                      child: _profileImage == null
+                          ? const Icon(
+                              Icons.person,
+                              size: 60,
+                              color: Colors.white,
+                            )
+                          : null,
                     ),
                   ),
                   Positioned(

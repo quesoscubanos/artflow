@@ -419,6 +419,7 @@ class _TutorialDetailPageState extends State<TutorialDetailPage> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
                         ),

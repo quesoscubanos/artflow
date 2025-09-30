@@ -42,12 +42,21 @@ class _GalleryPageState extends State<GalleryPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Tutorial'),
-          content: Text('Are you sure you want to delete "${tutorial['title']}"? This action cannot be undone.'),
+          title: const Text(
+            'Delete Tutorial',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            'Are you sure you want to delete "${tutorial['title']}"? This action cannot be undone.',
+            style: const TextStyle(color: Colors.white),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             TextButton(
               onPressed: () {

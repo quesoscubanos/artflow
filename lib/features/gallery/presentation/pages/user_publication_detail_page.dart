@@ -60,7 +60,7 @@ class _UserPublicationDetailPageState extends State<UserPublicationDetailPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
-          onPressed: () => context.go('/gallery'),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           widget.publication['title'] ?? 'Publication',
@@ -211,6 +211,7 @@ class _UserPublicationDetailPageState extends State<UserPublicationDetailPage> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
                         ),
