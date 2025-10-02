@@ -241,14 +241,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'By: ${tutorial['author']}',
-                    style: const TextStyle(
-                      fontSize: 8,
-                      color: AppTheme.textLight,
-                    ),
-                  ),
                 ],
               ),
             ),

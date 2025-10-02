@@ -26,6 +26,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   void initState() {
     super.initState();
     _loadProfileImage();
+    _loadProfileData();
   }
 
   @override
@@ -46,6 +47,23 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
           _profileImage = file;
         });
       }
+    }
+  }
+
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final displayName = prefs.getString('admin_display_name');
+    final biography = prefs.getString('admin_biography');
+    final artisticLevel = prefs.getString('admin_artistic_level');
+
+    if (displayName != null) {
+      _displayNameController.text = displayName;
+    }
+    if (biography != null) {
+      _biographyController.text = biography;
+    }
+    if (artisticLevel != null) {
+      _artisticLevel = artisticLevel;
     }
   }
 
@@ -74,11 +92,25 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
     }
   }
 
-  void _saveProfile() {
-    // TODO: Implement save logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('¡Perfil guardado!')),
-    );
+  Future<void> _saveProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('admin_display_name', _displayNameController.text);
+      await prefs.setString('admin_biography', _biographyController.text);
+      await prefs.setString('admin_artistic_level', _artisticLevel);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Perfil guardado exitosamente!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al guardar el perfil')),
+        );
+      }
+    }
   }
 
   void _logout() {
