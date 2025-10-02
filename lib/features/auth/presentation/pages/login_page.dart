@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                         
                         // Title
                         const Text(
-                          'Welcome Back',
+                          'Bienvenido de Vuelta',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 28,
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _usernameController,
                           textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
-                            hintText: 'Username',
+                            hintText: 'Nombre de usuario',
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                           obscureText: _obscurePassword,
                           textDirection: TextDirection.ltr,
                           decoration: InputDecoration(
-                            hintText: 'Password',
+                            hintText: 'Contraseña',
                             border: const OutlineInputBorder(),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -175,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     )
                                   : const Text(
-                                      'Log In',
+                                      'Iniciar Sesión',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,

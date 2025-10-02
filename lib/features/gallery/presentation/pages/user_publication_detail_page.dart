@@ -96,7 +96,7 @@ class _UserPublicationDetailPageState extends State<UserPublicationDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Step ${currentStepIndex + 1} of $totalSteps',
+                    'Paso ${currentStepIndex + 1} de $totalSteps',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -146,7 +146,7 @@ class _UserPublicationDetailPageState extends State<UserPublicationDetailPage> {
                 children: [
                   // Step title
                   Text(
-                    'Image ${currentStepIndex + 1}',
+                    'Imagen ${currentStepIndex + 1}',
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -159,7 +159,7 @@ class _UserPublicationDetailPageState extends State<UserPublicationDetailPage> {
                   Text(
                     currentImage['description']?.isNotEmpty == true
                         ? currentImage['description']!
-                        : 'No description provided for this image.',
+                        : 'No se proporcionó descripción para esta imagen.',
                     textDirection: TextDirection.ltr,
                     style: const TextStyle(
                       fontSize: 16,
@@ -184,7 +184,7 @@ class _UserPublicationDetailPageState extends State<UserPublicationDetailPage> {
                             ),
                           ),
                           child: const Text(
-                            'Previous',
+                            'Anterior',
                             style: TextStyle(
                               color: AppTheme.primaryBlue,
                               fontSize: 16,
@@ -207,7 +207,7 @@ class _UserPublicationDetailPageState extends State<UserPublicationDetailPage> {
                             ),
                           ),
                           child: Text(
-                            currentStepIndex < images.length - 1 ? 'Next' : 'Complete',
+                            currentStepIndex < images.length - 1 ? 'Siguiente' : 'Completar',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

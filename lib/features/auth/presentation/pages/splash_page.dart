@@ -58,7 +58,7 @@ class SplashPage extends StatelessWidget {
               
               // Tagline
               const Text(
-                'Unleash Your Creative Potential',
+                'Libera Tu Potencial Creativo',
                 style: TextStyle(
                   fontSize: 16,
                   color: AppTheme.textSecondary,

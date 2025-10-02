@@ -36,7 +36,7 @@ class WelcomePage extends StatelessWidget {
               const SizedBox(height: 48),
               
               const Text(
-                'Welcome to\nArtFlowRise',
+                'Bienvenido a\nArtFlowRise',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
@@ -48,7 +48,7 @@ class WelcomePage extends StatelessWidget {
               const SizedBox(height: 16),
               
               const Text(
-                'Start your artistic journey with\nguided tutorials and challenges',
+                'Comienza tu viaje artístico con\ntutoriales guiados y desafíos',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
@@ -69,7 +69,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Get Started',
+                  'Comenzar',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -89,7 +89,7 @@ class WelcomePage extends StatelessWidget {
                   side: const BorderSide(color: AppTheme.primaryBlue),
                 ),
                 child: const Text(
-                  'I already have an account',
+                  'Ya tengo una cuenta',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

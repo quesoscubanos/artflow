@@ -16,9 +16,9 @@ class AdminProfilePage extends StatefulWidget {
 
 class _AdminProfilePageState extends State<AdminProfilePage> {
   final ImagePicker _picker = ImagePicker();
-  final _displayNameController = TextEditingController(text: 'Admin User');
-  final _biographyController = TextEditingController(text: 'Administrator of ArtFlowRise platform. Managing tutorials and user content.');
-  String _artisticLevel = 'Expert';
+  final _displayNameController = TextEditingController(text: 'Usuario Admin');
+  final _biographyController = TextEditingController(text: 'Administrador de la plataforma ArtFlowRise. Gestionando tutoriales y contenido de usuarios.');
+  String _artisticLevel = 'Experto';
   File? _profileImage;
   String? _profileImagePath;
 
@@ -68,7 +68,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to pick image')),
+          const SnackBar(content: Text('Error al seleccionar imagen')),
         );
       }
     }
@@ -77,7 +77,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   void _saveProfile() {
     // TODO: Implement save logic
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile saved!')),
+      const SnackBar(content: Text('¡Perfil guardado!')),
     );
   }
 
@@ -94,7 +94,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Profile',
+          'Perfil de Admin',
           style: TextStyle(
             color: AppTheme.textPrimary,
             fontWeight: FontWeight.w600,
@@ -104,7 +104,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
           TextButton(
             onPressed: _logout,
             child: const Text(
-              'Logout',
+              'Cerrar Sesión',
               style: TextStyle(
                 color: AppTheme.errorColor,
                 fontWeight: FontWeight.w600,
@@ -158,7 +158,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
             TextField(
               controller: _displayNameController,
               decoration: const InputDecoration(
-                labelText: 'Display Name',
+                labelText: 'Nombre para Mostrar',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -167,7 +167,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
               controller: _biographyController,
               maxLines: 4,
               decoration: const InputDecoration(
-                labelText: 'Biography',
+                labelText: 'Biografía',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -175,10 +175,10 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
             DropdownButtonFormField<String>(
               value: _artisticLevel,
               decoration: const InputDecoration(
-                labelText: 'Artistic Level',
+                labelText: 'Nivel Artístico',
                 border: OutlineInputBorder(),
               ),
-              items: ['Beginner', 'Intermediate', 'Advanced', 'Expert']
+              items: ['Principiante', 'Intermedio', 'Avanzado', 'Experto']
                   .map((level) => DropdownMenuItem(
                         value: level,
                         child: Text(level),
@@ -203,7 +203,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
                   ),
                 ),
                 child: const Text(
-                  'Save Profile',
+                  'Guardar Perfil',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

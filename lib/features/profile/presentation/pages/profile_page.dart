@@ -16,9 +16,9 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final ImagePicker _picker = ImagePicker();
-  final _displayNameController = TextEditingController(text: 'Art Lover');
-  final _biographyController = TextEditingController(text: 'Passionate about learning art and exploring different techniques. Love watercolor and sketching!');
-  String _artisticLevel = 'Beginner';
+  final _displayNameController = TextEditingController(text: 'Amante del Arte');
+  final _biographyController = TextEditingController(text: 'Apasionado por aprender arte y explorar diferentes técnicas. Me encanta la acuarela y el dibujo!');
+  String _artisticLevel = 'Principiante';
   File? _profileImage;
   String? _profileImagePath;
 
@@ -68,7 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to pick image')),
+          const SnackBar(content: Text('Error al seleccionar imagen')),
         );
       }
     }
@@ -82,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Profile',
+          'Perfil',
           style: TextStyle(
             color: AppTheme.textPrimary,
             fontWeight: FontWeight.w600,
@@ -92,11 +92,12 @@ class _ProfilePageState extends State<ProfilePage> {
           IconButton(
             icon: const Icon(Icons.logout, color: AppTheme.errorColor),
             onPressed: _logout,
+            tooltip: 'Cerrar Sesión',
           ),
           TextButton(
             onPressed: _saveProfile,
             child: const Text(
-              'Save',
+              'Guardar',
               style: TextStyle(
                 color: AppTheme.primaryBlue,
                 fontWeight: FontWeight.w600,
@@ -150,7 +151,7 @@ class _ProfilePageState extends State<ProfilePage> {
             TextField(
               controller: _displayNameController,
               decoration: const InputDecoration(
-                labelText: 'Display Name',
+                labelText: 'Nombre para Mostrar',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -159,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
               controller: _biographyController,
               maxLines: 4,
               decoration: const InputDecoration(
-                labelText: 'Biography',
+                labelText: 'Biografía',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -167,10 +168,10 @@ class _ProfilePageState extends State<ProfilePage> {
             DropdownButtonFormField<String>(
               value: _artisticLevel,
               decoration: const InputDecoration(
-                labelText: 'Artistic Level',
+                labelText: 'Nivel Artístico',
                 border: OutlineInputBorder(),
               ),
-              items: ['Beginner', 'Intermediate', 'Advanced']
+              items: ['Principiante', 'Intermedio', 'Avanzado']
                   .map((level) => DropdownMenuItem(
                         value: level,
                         child: Text(level),
@@ -191,7 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _saveProfile() {
     // TODO: Implement save logic
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile saved!')),
+      const SnackBar(content: Text('¡Perfil guardado!')),
     );
   }
 
@@ -227,23 +228,23 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Settings'),
+        title: const Text('Configuración'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.edit),
-              title: const Text('Edit Profile'),
+              title: const Text('Editar Perfil'),
               onTap: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Edit profile feature coming soon!')),
+                  const SnackBar(content: Text('¡Función de editar perfil próximamente!')),
                 );
               },
             ),
             ListTile(
               leading: const Icon(Icons.logout, color: AppTheme.errorColor),
-              title: const Text('Logout', style: TextStyle(color: AppTheme.errorColor)),
+              title: const Text('Cerrar Sesión', style: TextStyle(color: AppTheme.errorColor)),
               onTap: () {
                 Navigator.pop(context);
                 context.read<AuthBloc>().add(AuthLogoutRequested());

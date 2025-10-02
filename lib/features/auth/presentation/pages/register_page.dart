@@ -60,7 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: [
                     const SizedBox(width: 48),
                     const Text(
-                      'Sign Up',
+                      'Registrarse',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -87,8 +87,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           keyboardType: TextInputType.emailAddress,
                           textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
-                            labelText: 'Email',
-                            hintText: 'Enter your email',
+                            labelText: 'Correo electrónico',
+                            hintText: 'Ingresa tu correo electrónico',
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -106,8 +106,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: _usernameController,
                           textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
-                            labelText: 'Username',
-                            hintText: 'Choose a username',
+                            labelText: 'Nombre de usuario',
+                            hintText: 'Elige un nombre de usuario',
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -126,8 +126,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           obscureText: _obscurePassword,
                           textDirection: TextDirection.ltr,
                           decoration: InputDecoration(
-                            labelText: 'Password',
-                            hintText: 'Create a password',
+                            labelText: 'Contraseña',
+                            hintText: 'Crea una contraseña',
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -168,8 +168,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           obscureText: _obscureConfirmPassword,
                           textDirection: TextDirection.ltr,
                           decoration: InputDecoration(
-                            labelText: 'Confirm Password',
-                            hintText: 'Confirm your password',
+                            labelText: 'Confirmar Contraseña',
+                            hintText: 'Confirma tu contraseña',
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
@@ -218,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                       ),
                                     )
-                                  : const Text('Create Account'),
+                                  : const Text('Crear Cuenta'),
                             );
                           },
                         ),
@@ -227,7 +227,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         
                         TextButton(
                           onPressed: () => context.go('/login'),
-                          child: const Text('Already have an account? Sign in'),
+                          child: const Text('¿Ya tienes una cuenta? Inicia sesión'),
                         ),
                       ],
                     ),
