@@ -15,7 +15,7 @@ class AdminDashboardPage extends StatefulWidget {
 }
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
-  void _editTutorial(Map<String, dynamic> tutorial, bool isOfficial) {
+  void _editTutorial(Map<String, dynamic> tutorial, bool? isOfficial) {
     final titleController = TextEditingController(text: tutorial['title']);
     final descriptionController = TextEditingController(text: tutorial['description']);
 
@@ -48,7 +48,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           ElevatedButton(
             onPressed: () {
               // Find the original tutorial and update it
-              if (isOfficial) {
+              if (isOfficial == true) {
                 final originalTutorial = officialTutorials.firstWhere((t) => t['id'] == tutorial['id']);
                 originalTutorial['title'] = titleController.text;
                 originalTutorial['description'] = descriptionController.text;
@@ -72,7 +72,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  void _deleteTutorial(Map<String, dynamic> tutorial, bool isOfficial) {
+  void _deleteTutorial(Map<String, dynamic> tutorial, bool? isOfficial) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -88,7 +88,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           ),
           TextButton(
             onPressed: () {
-              if (isOfficial) {
+              if (isOfficial == true) {
                 // Find and remove the original tutorial from officialTutorials
                 officialTutorials.removeWhere((t) => t['id'] == tutorial['id']);
                 // Update allTutorialsData for tutorial detail pages
@@ -113,7 +113,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildTutorialCard(Map<String, dynamic> tutorial, bool isOfficial) {
+  Widget _buildTutorialCard(Map<String, dynamic> tutorial, bool? isOfficial) {
     final imageUrl = tutorial['images'] != null && (tutorial['images'] as List).isNotEmpty
         ? ((tutorial['images'] as List).first is Map
             ? (tutorial['images'] as List).first['path']
@@ -124,7 +124,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: Colors.white,
       child: InkWell(
-        onTap: () => _openTutorialDetail(tutorial, isOfficial),
+        onTap: () => _openTutorialDetail(tutorial, isOfficial ?? false),
         borderRadius: BorderRadius.circular(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +188,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (isOfficial)
+                      if (isOfficial == true)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                           decoration: BoxDecoration(
@@ -258,8 +258,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  void _openTutorialDetail(Map<String, dynamic> tutorial, bool isOfficial) {
-    if (isOfficial) {
+  void _openTutorialDetail(Map<String, dynamic> tutorial, bool? isOfficial) {
+    if (isOfficial == true) {
       // For official tutorials, navigate to the detail page
       Navigator.of(context).push(
         MaterialPageRoute(
@@ -381,7 +381,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 itemCount: allTutorials.length,
                 itemBuilder: (context, index) {
                   final tutorial = allTutorials[index];
-                  final isOfficial = tutorial['isOfficial'] as bool;
+                  final isOfficial = tutorial['isOfficial'] as bool? ?? false;
                   return _buildTutorialCard(tutorial, isOfficial);
                 },
               );

@@ -68,6 +68,7 @@ class _AdminChallengesPageState extends State<AdminChallengesPage> {
                 'difficulty': selectedDifficulty,
                 'duration': durationController.text,
                 'participants': 0,
+                'isJoined': false,
                 'createdBy': 'Admin',
                 'createdDate': DateTime.now().toString().split(' ')[0],
               };

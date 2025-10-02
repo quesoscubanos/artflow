@@ -17,7 +17,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
       valueListenable: challengesNotifier,
       builder: (context, challengesList, _) {
         final activeCount = challengesList.length;
-        final joinedCount = challengesList.where((c) => c['isJoined'] == true).length;
+        final joinedCount = challengesList.where((c) => (c['isJoined'] as bool?) == true).length;
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -138,7 +138,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
   }
 
   Widget _buildChallengeCard(Map<String, dynamic> challenge) {
-    final isJoined = challenge['isJoined'] as bool;
+    final isJoined = challenge['isJoined'] as bool? ?? false;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -230,9 +230,9 @@ class _ChallengesPageState extends State<ChallengesPage> {
                   onPressed: () {
                     challenge['isJoined'] = !isJoined;
                     if (!isJoined) {
-                      challenge['participants']++;
+                      challenge['participants'] = ((challenge['participants'] as int?) ?? 0) + 1;
                     } else {
-                      challenge['participants']--;
+                      challenge['participants'] = ((challenge['participants'] as int?) ?? 0) - 1;
                     }
                     challengesNotifier.value = List.from(challenges);
                   },
