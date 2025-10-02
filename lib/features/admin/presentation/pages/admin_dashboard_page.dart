@@ -259,25 +259,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   void _openTutorialDetail(Map<String, dynamic> tutorial, bool? isOfficial) {
-    if (isOfficial == true) {
-      // For official tutorials, navigate to the detail page
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => TutorialDetailPage(
-            tutorialId: tutorial['id'],
-            initialStep: 0,
-            isAdmin: true,
-          ),
+    // Navigate to tutorial detail page for all tutorials (both official and user-uploaded)
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TutorialDetailPage(
+          tutorialId: tutorial['id'],
+          initialStep: 0,
+          isAdmin: true,
         ),
-      );
-    } else {
-      // For user tutorials, navigate to user publication detail
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => UserPublicationDetailPage(publication: tutorial),
-        ),
-      );
-    }
+      ),
+    );
   }
 
   @override
