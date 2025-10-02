@@ -86,6 +86,9 @@ List<Map<String, dynamic>> userTutorials = [
 /// Use `userTutorialsNotifier.value = userTutorials;` after mutating the list.
 final ValueNotifier<List<Map<String, dynamic>>> userTutorialsNotifier = ValueNotifier(userTutorials);
 
+/// Notifier for official tutorials
+final ValueNotifier<List<Map<String, dynamic>>> officialTutorialsNotifier = ValueNotifier(officialTutorials);
+
 // Challenges data
 List<Map<String, dynamic>> challenges = [
   {
@@ -115,8 +118,8 @@ List<Map<String, dynamic>> challenges = [
 /// Notifier for challenges
 final ValueNotifier<List<Map<String, dynamic>>> challengesNotifier = ValueNotifier(challenges);
 
-// Combined tutorials for detail page
-final Map<String, Tutorial> allTutorialsData = {
+// Combined tutorials for detail page - this will be updated when official tutorials change
+Map<String, Tutorial> allTutorialsData = {
   ...tutorialsData,
   // Add any additional tutorials here if needed
 };

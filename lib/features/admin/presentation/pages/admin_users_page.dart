@@ -134,7 +134,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete ${user['username']}?'),
+        content: Text('Are you sure you want to delete ${user['username']}? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -142,7 +142,9 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
           ),
           TextButton(
             onPressed: () {
-              // TODO: Implement user deletion
+              setState(() {
+                _users.remove(user);
+              });
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('User deleted successfully')),

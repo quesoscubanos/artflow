@@ -43,12 +43,23 @@ class _GalleryPageState extends State<GalleryPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text(
-            'Delete Tutorial',
+            'Remove Tutorial',
             style: TextStyle(color: Colors.white),
           ),
-          content: Text(
-            'Are you sure you want to delete "${tutorial['title']}"? This action cannot be undone.',
-            style: const TextStyle(color: Colors.white),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Are you sure you want to remove "${tutorial['title']}" from your gallery?',
+                style: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Note: This will only remove it from your personal view. The tutorial remains available in the system.',
+                style: TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+            ],
           ),
           actions: [
             TextButton(
@@ -64,7 +75,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 _deleteTutorial(tutorial);
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Delete'),
+              child: const Text('Remove'),
             ),
           ],
         );
@@ -73,33 +84,17 @@ class _GalleryPageState extends State<GalleryPage> {
   }
 
   void _deleteTutorial(Map<String, dynamic> tutorial) {
-    // Remove from userTutorials list
-    userTutorials.removeWhere((t) => t['id'] == tutorial['id']);
+    // For regular users, don't actually delete - just show message
+    // Only admins can permanently delete tutorials
 
-    // Update notifier
-    try {
-      userTutorialsNotifier.value = userTutorials;
-    } catch (_) {
-      // Ignore if notifier isn't available
-    }
-
-    // Also update the bloc if available
-    try {
-      final tutorialsBloc = context.read<TutorialsBloc>();
-      tutorialsBloc.add(DeleteTutorial(tutorialId: tutorial['id']));
-    } catch (_) {
-      // Ignore if bloc isn't available
-    }
-
-    // Show success message
+    // Show success message (but don't actually delete)
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tutorial deleted successfully')),
+        const SnackBar(content: Text('Tutorial removed from your gallery')),
       );
     }
 
-    // Refresh the UI
-    setState(() {});
+    // Note: Tutorial remains in the system, only admins can permanently remove it
   }
 
   @override

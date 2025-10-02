@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
@@ -11,8 +12,6 @@ class TutorialsPage extends StatefulWidget {
 }
 
 class _TutorialsPageState extends State<TutorialsPage> {
-  List<Map<String, dynamic>> get _tutorials => officialTutorials;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,11 +37,16 @@ class _TutorialsPageState extends State<TutorialsPage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _tutorials.length,
-        itemBuilder: (context, index) {
-          return _buildTutorialCard(_tutorials[index]);
+      body: ValueListenableBuilder<List<Map<String, dynamic>>>(
+        valueListenable: officialTutorialsNotifier,
+        builder: (context, tutorials, _) {
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: tutorials.length,
+            itemBuilder: (context, index) {
+              return _buildTutorialCard(tutorials[index]);
+            },
+          );
         },
       ),
     );

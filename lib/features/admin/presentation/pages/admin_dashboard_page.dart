@@ -47,12 +47,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              tutorial['title'] = titleController.text;
-              tutorial['description'] = descriptionController.text;
+              // Find the original tutorial and update it
               if (isOfficial) {
-                // Update official tutorials
-                setState(() {});
+                final originalTutorial = officialTutorials.firstWhere((t) => t['id'] == tutorial['id']);
+                originalTutorial['title'] = titleController.text;
+                originalTutorial['description'] = descriptionController.text;
+                officialTutorialsNotifier.value = List.from(officialTutorials);
               } else {
+                final originalTutorial = userTutorials.firstWhere((t) => t['id'] == tutorial['id']);
+                originalTutorial['title'] = titleController.text;
+                originalTutorial['description'] = descriptionController.text;
                 userTutorialsNotifier.value = List.from(userTutorials);
               }
 
@@ -74,7 +78,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         title: const Text('Delete Tutorial'),
-        content: Text('Are you sure you want to delete "${tutorial['title']}"?'),
+        content: Text(
+          'Are you sure you want to delete the tutorial "${tutorial['title']}"? This action will permanently remove the tutorial from the system. Only admins can perform this action.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -83,10 +89,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           TextButton(
             onPressed: () {
               if (isOfficial) {
-                officialTutorials.remove(tutorial);
+                // Find and remove the original tutorial from officialTutorials
+                officialTutorials.removeWhere((t) => t['id'] == tutorial['id']);
+                // Update allTutorialsData for tutorial detail pages
                 allTutorialsData.remove(tutorial['id']);
+                officialTutorialsNotifier.value = List.from(officialTutorials);
               } else {
-                userTutorials.remove(tutorial);
+                // Find and remove the original tutorial from userTutorials
+                userTutorials.removeWhere((t) => t['id'] == tutorial['id']);
                 userTutorialsNotifier.value = List.from(userTutorials);
               }
 
@@ -319,57 +329,62 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       body: ValueListenableBuilder<List<Map<String, dynamic>>>(
         valueListenable: userTutorialsNotifier,
         builder: (context, userTutorialsList, _) {
-          // Combine official and user tutorials
-          final List<Map<String, dynamic>> allTutorials = [
-            ...officialTutorials.map((t) => {...t, 'isOfficial': true}),
-            ...userTutorialsList.map((t) => {...t, 'isOfficial': false}),
-          ];
+          return ValueListenableBuilder<List<Map<String, dynamic>>>(
+            valueListenable: officialTutorialsNotifier,
+            builder: (context, officialTutorialsList, _) {
+              // Combine official and user tutorials
+              final List<Map<String, dynamic>> allTutorials = [
+                ...officialTutorialsList.map((t) => {...t, 'isOfficial': true}),
+                ...userTutorialsList.map((t) => {...t, 'isOfficial': false}),
+              ];
 
-          if (allTutorials.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.waving_hand,
-                    size: 80,
-                    color: AppTheme.primaryBlue,
+              if (allTutorials.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.waving_hand,
+                        size: 80,
+                        color: AppTheme.primaryBlue,
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        '👉 "Welcome, Admin"',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Tutorials will appear here',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    '👉 "Welcome, Admin"',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Tutorials will appear here',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          return GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 0.7,
-            ),
-            itemCount: allTutorials.length,
-            itemBuilder: (context, index) {
-              final tutorial = allTutorials[index];
-              final isOfficial = tutorial['isOfficial'] as bool;
-              return _buildTutorialCard(tutorial, isOfficial);
+              return GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 0.7,
+                ),
+                itemCount: allTutorials.length,
+                itemBuilder: (context, index) {
+                  final tutorial = allTutorials[index];
+                  final isOfficial = tutorial['isOfficial'] as bool;
+                  return _buildTutorialCard(tutorial, isOfficial);
+                },
+              );
             },
           );
         },
