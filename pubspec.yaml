@@ -50,6 +50,9 @@ dependencies:
   # Image picker
   image_picker: ^1.1.2
 
+  # Local storage
+  shared_preferences: ^2.2.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

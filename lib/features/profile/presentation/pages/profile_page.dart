@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 
@@ -19,6 +20,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final _biographyController = TextEditingController(text: 'Passionate about learning art and exploring different techniques. Love watercolor and sketching!');
   String _artisticLevel = 'Beginner';
   File? _profileImage;
+  String? _profileImagePath;
 
   @override
   void dispose() {

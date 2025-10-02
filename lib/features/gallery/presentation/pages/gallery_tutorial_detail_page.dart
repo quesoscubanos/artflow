@@ -20,10 +20,8 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
   final ImagePicker _picker = ImagePicker();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _tagsController = TextEditingController();
   String _selectedCategory = 'Drawing';
   String _selectedDifficulty = 'Beginner';
-  final List<String> _selectedTags = [];
   final List<Map<String, String>> _uploadedImages = []; // Holds {'path': filePath, 'description': description}
 
   final List<String> _categories = [
@@ -46,23 +44,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _tagsController.dispose();
     super.dispose();
-  }
-
-  void _addTag() {
-    if (_tagsController.text.isNotEmpty && !_selectedTags.contains(_tagsController.text)) {
-      setState(() {
-        _selectedTags.add(_tagsController.text);
-        _tagsController.clear();
-      });
-    }
-  }
-
-  void _removeTag(String tag) {
-    setState(() {
-      _selectedTags.remove(tag);
-    });
   }
 
   Future<void> _selectImages() async {
@@ -584,71 +566,6 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
             ),
             const SizedBox(height: 24),
 
-            // Tags (Optional)
-            const Text(
-              'Tags (Optional)',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _tagsController,
-                    textDirection: TextDirection.ltr,
-                    decoration: InputDecoration(
-                      hintText: 'Add tags to help others find your tutorial',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey.shade50,
-                    ),
-                    onSubmitted: (_) => _addTag(),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: _addTag,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text('Add'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _selectedTags.map((tag) {
-                return Chip(
-                  label: Text(tag),
-                  deleteIcon: const Icon(Icons.close, size: 16),
-                  onDeleted: () => _removeTag(tag),
-                  backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                  labelStyle: const TextStyle(color: AppTheme.primaryBlue),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 32),
 
             // Publish Button
             SizedBox(

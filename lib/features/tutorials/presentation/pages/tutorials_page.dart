@@ -26,16 +26,7 @@ class _TutorialsPageState extends State<TutorialsPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: AppTheme.textSecondary),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Create tutorial feature coming soon!')),
-              );
-            },
-          ),
-        ],
+        actions: null,
       ),
       body: ValueListenableBuilder<List<Map<String, dynamic>>>(
         valueListenable: officialTutorialsNotifier,

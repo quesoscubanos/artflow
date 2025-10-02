@@ -312,19 +312,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: AppTheme.primaryBlue),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const GalleryTutorialDetailPage(isAdmin: true),
-                ),
-              );
-            },
-            tooltip: 'Create Tutorial',
-          ),
-        ],
+        actions: null,
       ),
       body: ValueListenableBuilder<List<Map<String, dynamic>>>(
         valueListenable: userTutorialsNotifier,
