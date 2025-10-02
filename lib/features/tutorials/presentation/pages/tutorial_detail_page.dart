@@ -219,11 +219,13 @@ final Map<String, Tutorial> tutorialsData = {
 class TutorialDetailPage extends StatefulWidget {
   final String tutorialId;
   final int initialStep;
+  final bool isAdmin;
 
   const TutorialDetailPage({
     super.key,
     required this.tutorialId,
     this.initialStep = 0,
+    this.isAdmin = false,
   });
 
   @override
@@ -280,7 +282,7 @@ class _TutorialDetailPageState extends State<TutorialDetailPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
-          onPressed: () => context.go('/tutorials'),
+          onPressed: widget.isAdmin ? () => Navigator.of(context).pop() : () => context.go('/tutorials'),
         ),
       ),
       body: SingleChildScrollView(

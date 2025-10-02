@@ -5,9 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:artflowrise/features/tutorials/presentation/pages/tutorial_detail_page.dart';
 
 class GalleryTutorialDetailPage extends StatefulWidget {
-  const GalleryTutorialDetailPage({super.key});
+  final bool isAdmin;
+
+  const GalleryTutorialDetailPage({super.key, this.isAdmin = false});
 
   @override
   State<GalleryTutorialDetailPage> createState() => _GalleryTutorialDetailPageState();
@@ -162,34 +165,72 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
       return;
     }
 
-    // Get current user from AuthBloc
-    final authState = context.read<AuthBloc>().state;
-    final currentUsername = authState is AuthAuthenticated ? authState.username : 'Unknown User';
+    if (widget.isAdmin) {
+      // For admin, create official tutorial
+      final tutorialId = 'admin-${DateTime.now().millisecondsSinceEpoch}';
 
-    // Add to user tutorials list
-    final newTutorial = {
-      'id': 'user-${DateTime.now().millisecondsSinceEpoch}',
-      'title': _titleController.text,
-      'description': _descriptionController.text,
-      'author': currentUsername,
-      'level': _selectedDifficulty,
-      'duration': 'TBD', // Could be calculated or user input
-      'isOfficial': false,
-      'images': _uploadedImages, // Store the image data with descriptions
-    };
+      // Add to official tutorials list
+      final newTutorial = {
+        'id': tutorialId,
+        'title': _titleController.text,
+        'description': _descriptionController.text,
+        'author': 'ArtFlowRise Team',
+        'level': _selectedDifficulty,
+        'duration': '${_uploadedImages.length * 5} min', // Estimate duration
+        'isOfficial': true,
+      };
 
-    userTutorials.add(newTutorial);
+      officialTutorials.add(newTutorial);
 
-    // Notify listeners so dashboard updates immediately without copying data.
-    try {
-      userTutorialsNotifier.value = userTutorials;
-    } catch (_) {
-      // If for any reason notifier isn't available, ignore to avoid crash.
+      // Also add to allTutorialsData for detail view
+      final steps = _uploadedImages.map((image) {
+        return TutorialStep(
+          id: 'step-${_uploadedImages.indexOf(image) + 1}',
+          title: 'Step ${_uploadedImages.indexOf(image) + 1}',
+          description: image['description']!.isNotEmpty ? image['description']! : 'Follow this step in the tutorial.',
+          imageUrl: image['path']!,
+        );
+      }).toList();
+
+      allTutorialsData[tutorialId] = Tutorial(
+        id: tutorialId,
+        title: _titleController.text,
+        steps: steps,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Official tutorial published successfully!')),
+      );
+    } else {
+      // Get current user from AuthBloc
+      final authState = context.read<AuthBloc>().state;
+      final currentUsername = authState is AuthAuthenticated ? authState.username : 'Unknown User';
+
+      // Add to user tutorials list
+      final newTutorial = {
+        'id': 'user-${DateTime.now().millisecondsSinceEpoch}',
+        'title': _titleController.text,
+        'description': _descriptionController.text,
+        'author': currentUsername,
+        'level': _selectedDifficulty,
+        'duration': 'TBD', // Could be calculated or user input
+        'isOfficial': false,
+        'images': _uploadedImages, // Store the image data with descriptions
+      };
+
+      userTutorials.add(newTutorial);
+
+      // Notify listeners so dashboard updates immediately without copying data.
+      try {
+        userTutorialsNotifier.value = userTutorials;
+      } catch (_) {
+        // If for any reason notifier isn't available, ignore to avoid crash.
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tutorial published successfully!')),
+      );
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Tutorial published successfully!')),
-    );
 
     Navigator.of(context).pop();
   }

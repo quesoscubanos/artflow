@@ -10,12 +10,21 @@ import 'package:artflowrise/features/gallery/presentation/pages/gallery_page.dar
 import 'package:artflowrise/features/tutorials/presentation/pages/tutorials_page.dart';
 import 'package:artflowrise/features/tutorials/presentation/pages/tutorial_detail_page.dart';
 import 'package:artflowrise/features/challenges/presentation/pages/challenges_page.dart';
+import 'package:artflowrise/features/admin/presentation/pages/admin_main_navigation_page.dart';
 import 'package:artflowrise/features/admin/presentation/pages/admin_dashboard_page.dart';
+import 'package:artflowrise/features/admin/presentation/pages/admin_users_page.dart';
+import 'package:artflowrise/features/admin/presentation/pages/admin_challenges_page.dart';
+import 'package:artflowrise/features/admin/presentation/pages/admin_tutorials_page.dart';
+import 'package:artflowrise/features/admin/presentation/pages/admin_settings_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/splash',
     routes: [
+      GoRoute(
+        path: '/',
+        redirect: (context, state) => '/splash',
+      ),
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashPage(),
@@ -71,7 +80,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/admin',
-        builder: (context, state) => const AdminDashboardPage(),
+        builder: (context, state) => const AdminMainNavigationPage(),
       ),
     ],
   );

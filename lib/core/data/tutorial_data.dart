@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:artflowrise/features/tutorials/presentation/pages/tutorial_detail_page.dart';
 
 // Official tutorials (admin uploaded)
-final List<Map<String, dynamic>> officialTutorials = [
+List<Map<String, dynamic>> officialTutorials = [
   {
     'id': '1',
     'title': 'Drawing Fundamentals',
@@ -85,6 +85,35 @@ List<Map<String, dynamic>> userTutorials = [
 /// (e.g., dashboard) can listen and react immediately when the gallery changes.
 /// Use `userTutorialsNotifier.value = userTutorials;` after mutating the list.
 final ValueNotifier<List<Map<String, dynamic>>> userTutorialsNotifier = ValueNotifier(userTutorials);
+
+// Challenges data
+List<Map<String, dynamic>> challenges = [
+  {
+    'id': '1',
+    'title': 'Weekly Sketch Challenge',
+    'description': 'Create a sketch of your favorite object using only pencil',
+    'difficulty': 'Beginner',
+    'duration': '7 days',
+    'participants': 45,
+    'createdBy': 'Admin',
+    'createdDate': '2024-01-15',
+    'isJoined': false,
+  },
+  {
+    'id': '2',
+    'title': 'Color Harmony Master',
+    'description': 'Create a painting using complementary colors',
+    'difficulty': 'Intermediate',
+    'duration': '14 days',
+    'participants': 23,
+    'createdBy': 'Admin',
+    'createdDate': '2024-01-20',
+    'isJoined': false,
+  },
+];
+
+/// Notifier for challenges
+final ValueNotifier<List<Map<String, dynamic>>> challengesNotifier = ValueNotifier(challenges);
 
 // Combined tutorials for detail page
 final Map<String, Tutorial> allTutorialsData = {

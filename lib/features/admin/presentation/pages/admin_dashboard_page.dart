@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
-import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
+import 'package:artflowrise/features/gallery/presentation/pages/gallery_tutorial_detail_page.dart';
+import 'package:artflowrise/features/gallery/presentation/pages/user_publication_detail_page.dart';
+import 'package:artflowrise/features/tutorials/presentation/pages/tutorial_detail_page.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -12,308 +15,231 @@ class AdminDashboardPage extends StatefulWidget {
 }
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
-  final ImagePicker _picker = ImagePicker();
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _authorController = TextEditingController();
-  final _levelController = TextEditingController();
-  final _durationController = TextEditingController();
-  XFile? _selectedImage;
+  void _editTutorial(Map<String, dynamic> tutorial, bool isOfficial) {
+    final titleController = TextEditingController(text: tutorial['title']);
+    final descriptionController = TextEditingController(text: tutorial['description']);
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _authorController.dispose();
-    _levelController.dispose();
-    _durationController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _selectedImage = image;
-      });
-    }
-  }
-
-  void _showUploadDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Upload Tutorial'),
+        backgroundColor: Colors.white,
+        title: const Text('Edit Tutorial'),
         content: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
-                  validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                ),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                  validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                ),
-                TextFormField(
-                  controller: _authorController,
-                  decoration: const InputDecoration(labelText: 'Author'),
-                  validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                ),
-                TextFormField(
-                  controller: _levelController,
-                  decoration: const InputDecoration(labelText: 'Level'),
-                  validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                ),
-                TextFormField(
-                  controller: _durationController,
-                  decoration: const InputDecoration(labelText: 'Duration'),
-                  validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: _pickImage,
-                  icon: const Icon(Icons.image),
-                  label: const Text('Select Image'),
-                ),
-                if (_selectedImage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text('Selected: ${_selectedImage!.name}'),
-                  ),
-              ],
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(labelText: 'Title'),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+                maxLines: 3,
+              ),
+            ],
           ),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _clearForm();
-            },
+            onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: _uploadTutorial,
-            child: const Text('Upload'),
+            onPressed: () {
+              tutorial['title'] = titleController.text;
+              tutorial['description'] = descriptionController.text;
+              if (isOfficial) {
+                // Update official tutorials
+                setState(() {});
+              } else {
+                userTutorialsNotifier.value = List.from(userTutorials);
+              }
+
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Tutorial updated successfully')),
+              );
+            },
+            child: const Text('Update'),
           ),
         ],
       ),
     );
   }
 
-  void _uploadTutorial() {
-    if (_formKey.currentState?.validate() ?? false) {
-      if (_selectedImage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select an image')),
-        );
-        return;
-      }
-
-      context.read<TutorialsBloc>().add(UploadTutorial(
-        title: _titleController.text,
-        description: _descriptionController.text,
-        author: _authorController.text,
-        level: _levelController.text,
-        duration: _durationController.text,
-        image: _selectedImage!,
-      ));
-
-      Navigator.of(context).pop();
-      _clearForm();
-    }
-  }
-
-  void _clearForm() {
-    _titleController.clear();
-    _descriptionController.clear();
-    _authorController.clear();
-    _levelController.clear();
-    _durationController.clear();
-    setState(() {
-      _selectedImage = null;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => TutorialsBloc()..add(LoadTutorials()),
-      child: BlocListener<TutorialsBloc, TutorialsState>(
-        listener: (context, state) {
-          if (state is TutorialsError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          } else if (state is TutorialsLoaded) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Tutorial uploaded successfully')),
-            );
-          }
-        },
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            title: Row(
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.admin_panel_settings,
-                    size: 20,
-                    color: AppTheme.primaryBlue,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Admin Dashboard',
-                  style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+  void _deleteTutorial(Map<String, dynamic> tutorial, bool isOfficial) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Delete Tutorial'),
+        content: Text('Are you sure you want to delete "${tutorial['title']}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
           ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.5,
-                  children: [
-                    _buildStatCard('Total Users', '1,234', Icons.people, AppTheme.primaryBlue),
-                    _buildStatCard('Active Tutorials', '89', Icons.school, AppTheme.primaryPink),
-                    _buildStatCard('Pending Reviews', '23', Icons.pending, Colors.orange),
-                    _buildStatCard('Gallery Posts', '456', Icons.image, Colors.green),
-                  ],
-                ),
-                const SizedBox(height: 32),
+          TextButton(
+            onPressed: () {
+              if (isOfficial) {
+                officialTutorials.remove(tutorial);
+                allTutorialsData.remove(tutorial['id']);
+              } else {
+                userTutorials.remove(tutorial);
+                userTutorialsNotifier.value = List.from(userTutorials);
+              }
 
-                const Text(
-                  'Recent Activity',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    final activities = [
-                      {'text': 'Sarah_Artist uploaded a new artwork', 'icon': Icons.image, 'time': '2 hours ago'},
-                      {'text': 'Mike_Draws completed a tutorial', 'icon': Icons.school, 'time': '3 hours ago'},
-                      {'text': 'New user Emma_Art registered', 'icon': Icons.person_add, 'time': '5 hours ago'},
-                      {'text': 'Tutorial was approved', 'icon': Icons.check_circle, 'time': '6 hours ago'},
-                      {'text': 'Content was reported', 'icon': Icons.report, 'time': '8 hours ago'},
-                    ];
-
-                    final activity = activities[index];
-                    return _buildActivityItem(
-                      activity['text'] as String,
-                      activity['time'] as String,
-                      activity['icon'] as IconData,
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 32),
-
-                const Text(
-                  'Quick Actions',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 2,
-                  children: [
-                    _buildActionCard('Manage Users', Icons.people, () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('User management feature coming soon!')),
-                      );
-                    }),
-                    _buildActionCard('Review Content', Icons.rate_review, () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Content review feature coming soon!')),
-                      );
-                    }),
-                    _buildActionCard('Create Tutorial', Icons.add_circle, _showUploadDialog),
-                    _buildActionCard('View Reports', Icons.analytics, () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Reports feature coming soon!')),
-                      );
-                    }),
-                  ],
-                ),
-              ],
-            ),
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Tutorial deleted successfully')),
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
           ),
-        ),
+        ],
       ),
     );
   }
 
+  Widget _buildTutorialCard(Map<String, dynamic> tutorial, bool isOfficial) {
+    final imageUrl = tutorial['images'] != null && (tutorial['images'] as List).isNotEmpty
+        ? ((tutorial['images'] as List).first is Map
+            ? (tutorial['images'] as List).first['path']
+            : (tutorial['images'] as List).first)
+        : 'images/perspective.png';
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      color: Colors.white,
+      child: InkWell(
+        onTap: () => _openTutorialDetail(tutorial, isOfficial),
+        borderRadius: BorderRadius.circular(12),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
+            Container(
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                color: Colors.grey[100],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                child: imageUrl != null && imageUrl.isNotEmpty
+                    ? Image.file(
+                        File(imageUrl),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'images/perspective.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryBlue.withOpacity(0.1),
+                                child: const Icon(
+                                  Icons.image_not_supported,
+                                  size: 24,
+                                  color: AppTheme.textLight,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      )
+                    : Container(
+                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                        child: const Icon(
+                          Icons.school,
+                          size: 24,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppTheme.textSecondary,
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          tutorial['title'],
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isOfficial)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'OFFICIAL',
+                            style: TextStyle(
+                              fontSize: 5,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryBlue,
+                            ),
+                          ),
+                        ),
+                      PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        iconSize: 14,
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'edit':
+                              _editTutorial(tutorial, isOfficial);
+                              break;
+                            case 'delete':
+                              _deleteTutorial(tutorial, isOfficial);
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Text('Edit'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    tutorial['description'],
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: AppTheme.textSecondary,
+                      height: 1.2,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'By: ${tutorial['author']}',
+                    style: const TextStyle(
+                      fontSize: 8,
+                      color: AppTheme.textLight,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -322,51 +248,131 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildActivityItem(String activity, String time, IconData icon) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-          child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
-        ),
-        title: Text(
-          activity,
-          style: const TextStyle(fontSize: 14),
-        ),
-        subtitle: Text(
-          time,
-          style: const TextStyle(fontSize: 12, color: AppTheme.textLight),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionCard(String title, IconData icon, VoidCallback onTap) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(icon, color: AppTheme.primaryBlue),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-              ),
-            ],
+  void _openTutorialDetail(Map<String, dynamic> tutorial, bool isOfficial) {
+    if (isOfficial) {
+      // For official tutorials, navigate to the detail page
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => TutorialDetailPage(
+            tutorialId: tutorial['id'],
+            initialStep: 0,
+            isAdmin: true,
           ),
         ),
+      );
+    } else {
+      // For user tutorials, navigate to user publication detail
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => UserPublicationDetailPage(publication: tutorial),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.admin_panel_settings,
+                size: 20,
+                color: AppTheme.primaryBlue,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Admin Dashboard',
+              style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add, color: AppTheme.primaryBlue),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const GalleryTutorialDetailPage(isAdmin: true),
+                ),
+              );
+            },
+            tooltip: 'Create Tutorial',
+          ),
+        ],
+      ),
+      body: ValueListenableBuilder<List<Map<String, dynamic>>>(
+        valueListenable: userTutorialsNotifier,
+        builder: (context, userTutorialsList, _) {
+          // Combine official and user tutorials
+          final List<Map<String, dynamic>> allTutorials = [
+            ...officialTutorials.map((t) => {...t, 'isOfficial': true}),
+            ...userTutorialsList.map((t) => {...t, 'isOfficial': false}),
+          ];
+
+          if (allTutorials.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.waving_hand,
+                    size: 80,
+                    color: AppTheme.primaryBlue,
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    '👉 "Welcome, Admin"',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Tutorials will appear here',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 0.7,
+            ),
+            itemCount: allTutorials.length,
+            itemBuilder: (context, index) {
+              final tutorial = allTutorials[index];
+              final isOfficial = tutorial['isOfficial'] as bool;
+              return _buildTutorialCard(tutorial, isOfficial);
+            },
+          );
+        },
       ),
     );
   }

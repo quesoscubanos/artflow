@@ -12,7 +12,11 @@ class SplashPage extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          context.go('/dashboard');
+          if (state.isAdmin) {
+            context.go('/admin');
+          } else {
+            context.go('/dashboard');
+          }
         } else if (state is AuthUnauthenticated) {
           // Navigate to welcome page instead of login directly
           context.go('/welcome');
