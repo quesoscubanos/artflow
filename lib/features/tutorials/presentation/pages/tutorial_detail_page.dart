@@ -319,7 +319,7 @@ class _TutorialDetailPageState extends State<TutorialDetailPage> {
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: AppTheme.inputFillColor,
+                    backgroundColor: AppTheme.primaryPink,
                     valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
                   ),
                 ],

@@ -23,18 +23,46 @@ class _ProfilePageState extends State<ProfilePage> {
   String? _profileImagePath;
 
   @override
+  void initState() {
+    super.initState();
+    _loadProfileImage();
+  }
+
+  @override
   void dispose() {
     _displayNameController.dispose();
     _biographyController.dispose();
     super.dispose();
   }
 
+  Future<void> _loadProfileImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('profile_image_path');
+    if (imagePath != null && imagePath.isNotEmpty) {
+      final file = File(imagePath);
+      if (await file.exists()) {
+        setState(() {
+          _profileImagePath = imagePath;
+          _profileImage = file;
+        });
+      }
+    }
+  }
+
+  Future<void> _saveProfileImage(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('profile_image_path', path);
+  }
+
   Future<void> _pickProfileImage() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
+        final imagePath = image.path;
+        await _saveProfileImage(imagePath);
         setState(() {
-          _profileImage = File(image.path);
+          _profileImagePath = imagePath;
+          _profileImage = File(imagePath);
         });
       }
     } catch (e) {
@@ -89,8 +117,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: CircleAvatar(
                       radius: 60,
                       backgroundColor: Colors.grey,
-                      backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                      child: _profileImage == null
+                      backgroundImage: _profileImagePath != null ? FileImage(File(_profileImagePath!)) : null,
+                      child: _profileImagePath == null
                           ? const Icon(
                               Icons.person,
                               size: 60,

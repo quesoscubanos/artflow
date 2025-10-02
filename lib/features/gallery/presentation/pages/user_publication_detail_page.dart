@@ -106,7 +106,7 @@ class _UserPublicationDetailPageState extends State<UserPublicationDetailPage> {
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: AppTheme.inputFillColor,
+                    backgroundColor: AppTheme.primaryPink,
                     valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
                   ),
                 ],

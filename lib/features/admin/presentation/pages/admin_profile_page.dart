@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -19,6 +20,13 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   final _biographyController = TextEditingController(text: 'Administrator of ArtFlowRise platform. Managing tutorials and user content.');
   String _artisticLevel = 'Expert';
   File? _profileImage;
+  String? _profileImagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileImage();
+  }
 
   @override
   void dispose() {
@@ -27,12 +35,34 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
     super.dispose();
   }
 
+  Future<void> _loadProfileImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('admin_profile_image_path');
+    if (imagePath != null && imagePath.isNotEmpty) {
+      final file = File(imagePath);
+      if (await file.exists()) {
+        setState(() {
+          _profileImagePath = imagePath;
+          _profileImage = file;
+        });
+      }
+    }
+  }
+
+  Future<void> _saveProfileImage(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('admin_profile_image_path', path);
+  }
+
   Future<void> _pickProfileImage() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
+        final imagePath = image.path;
+        await _saveProfileImage(imagePath);
         setState(() {
-          _profileImage = File(image.path);
+          _profileImagePath = imagePath;
+          _profileImage = File(imagePath);
         });
       }
     } catch (e) {
@@ -95,8 +125,8 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
                     child: CircleAvatar(
                       radius: 60,
                       backgroundColor: Colors.grey,
-                      backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                      child: _profileImage == null
+                      backgroundImage: _profileImagePath != null ? FileImage(File(_profileImagePath!)) : null,
+                      child: _profileImagePath == null
                           ? const Icon(
                               Icons.person,
                               size: 60,
