@@ -31,7 +31,11 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            context.go('/dashboard');
+            if (state.isAdmin) {
+              context.go('/admin');
+            } else {
+              context.go('/dashboard');
+            }
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -65,23 +69,24 @@ class _LoginPageState extends State<LoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(
-                          width: 60,
-                          height: 60,
+                          width: 80,
+                          height: 80,
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue.withOpacity(0.1),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(
-                            Icons.palette,
-                            size: 30,
-                            color: AppTheme.primaryBlue,
+                          child: Image.asset(
+                            'logo/logo.png',
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.contain,
                           ),
                         ),
                         const SizedBox(height: 24),
                         
                         // Title
                         const Text(
-                          'Welcome Back',
+                          'Bienvenido de Vuelta',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 28,
@@ -94,8 +99,9 @@ class _LoginPageState extends State<LoginPage> {
                         // Username field
                         TextFormField(
                           controller: _usernameController,
+                          textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
-                            hintText: 'Username',
+                            hintText: 'Nombre de usuario',
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
@@ -111,8 +117,9 @@ class _LoginPageState extends State<LoginPage> {
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
+                          textDirection: TextDirection.ltr,
                           decoration: InputDecoration(
-                            hintText: 'Password',
+                            hintText: 'Contraseña',
                             border: const OutlineInputBorder(),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -168,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     )
                                   : const Text(
-                                      'Log In',
+                                      'Iniciar Sesión',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,

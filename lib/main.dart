@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:artflowrise/core/di/injection_container.dart';
 import 'package:artflowrise/core/router/app_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +30,9 @@ class ArtFlowRiseApp extends StatelessWidget {
         BlocProvider(
           create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested()),
         ),
+        BlocProvider(
+          create: (_) => getIt<TutorialsBloc>()..add(LoadTutorials()),
+        ),
       ],
       child: MaterialApp.router(
         title: 'ArtFlowRise',
@@ -38,6 +41,11 @@ class ArtFlowRiseApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
+        locale: const Locale('en', 'US'),
+        supportedLocales: const [Locale('en', 'US')],
+        localeResolutionCallback: (locale, supportedLocales) {
+          return const Locale('en', 'US');
+        },
       ),
     );
   }

@@ -16,13 +16,16 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -33,7 +36,11 @@ class _RegisterPageState extends State<RegisterPage> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            context.go('/dashboard');
+            if (state.isAdmin) {
+              context.go('/admin');
+            } else {
+              context.go('/dashboard');
+            }
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -53,7 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: [
                     const SizedBox(width: 48),
                     const Text(
-                      'Sign Up',
+                      'Registrarse',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -78,16 +85,17 @@ class _RegisterPageState extends State<RegisterPage> {
                         TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
+                          textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
-                            labelText: 'Email',
-                            hintText: 'Enter your email',
+                            labelText: 'Correo electrónico',
+                            hintText: 'Ingresa tu correo electrónico',
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
                             }
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                              return 'Please enter a valid email';
+                            if (!RegExp(r'^[\w-\.]+@gmail\.com$').hasMatch(value)) {
+                              return 'Please enter a valid Gmail address';
                             }
                             return null;
                           },
@@ -96,9 +104,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         
                         TextFormField(
                           controller: _usernameController,
+                          textDirection: TextDirection.ltr,
                           decoration: const InputDecoration(
-                            labelText: 'Username',
-                            hintText: 'Choose a username',
+                            labelText: 'Nombre de usuario',
+                            hintText: 'Elige un nombre de usuario',
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -115,9 +124,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
+                          textDirection: TextDirection.ltr,
                           decoration: InputDecoration(
-                            labelText: 'Password',
-                            hintText: 'Create a password',
+                            labelText: 'Contraseña',
+                            hintText: 'Crea una contraseña',
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -133,14 +143,56 @@ class _RegisterPageState extends State<RegisterPage> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter a password';
                             }
-                            if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
+                            if (value.length < 8) {
+                              return 'Password must be at least 8 characters';
+                            }
+                            if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                              return 'Password must contain at least one uppercase letter';
+                            }
+                            if (!RegExp(r'[a-z]').hasMatch(value)) {
+                              return 'Password must contain at least one lowercase letter';
+                            }
+                            if (!RegExp(r'[0-9]').hasMatch(value)) {
+                              return 'Password must contain at least one number';
+                            }
+                            if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                              return 'Password must contain at least one symbol';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscureConfirmPassword,
+                          textDirection: TextDirection.ltr,
+                          decoration: InputDecoration(
+                            labelText: 'Confirmar Contraseña',
+                            hintText: 'Confirma tu contraseña',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                                });
+                              },
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please confirm your password';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Passwords do not match';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 32),
-                        
+
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return ElevatedButton(
@@ -166,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                       ),
                                     )
-                                  : const Text('Create Account'),
+                                  : const Text('Crear Cuenta'),
                             );
                           },
                         ),
@@ -175,7 +227,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         
                         TextButton(
                           onPressed: () => context.go('/login'),
-                          child: const Text('Already have an account? Sign in'),
+                          child: const Text('¿Ya tienes una cuenta? Inicia sesión'),
                         ),
                       ],
                     ),

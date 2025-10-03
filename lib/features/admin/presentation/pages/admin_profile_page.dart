@@ -4,37 +4,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
+import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class AdminProfilePage extends StatefulWidget {
+  const AdminProfilePage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<AdminProfilePage> createState() => _AdminProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _AdminProfilePageState extends State<AdminProfilePage> {
   final ImagePicker _picker = ImagePicker();
-  final _displayNameController = TextEditingController();
-  final _biographyController = TextEditingController();
-  String _artisticLevel = 'Principiante';
+  final _displayNameController = TextEditingController(text: 'Usuario Admin');
+  final _biographyController = TextEditingController(text: 'Administrador de la plataforma ArtFlowRise. Gestionando tutoriales y contenido de usuarios.');
+  String _artisticLevel = 'Experto';
   String? _profileImagePath;
-  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
-    _initializeProfile();
-  }
-
-  Future<void> _initializeProfile() async {
-    // Get current user ID from AuthBloc
-    final authState = context.read<AuthBloc>().state;
-    if (authState is AuthAuthenticated) {
-      _currentUserId = authState.userId;
-      await _loadProfileData();
-    }
+    _loadProfileImage();
   }
 
   @override
@@ -44,44 +34,22 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  Future<void> _loadProfileData() async {
-    if (_currentUserId == null) return;
-
+  Future<void> _loadProfileImage() async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Load profile image
-    final imagePath = prefs.getString('profile_image_path_$_currentUserId');
+    final imagePath = prefs.getString('admin_profile_image_path');
     if (imagePath != null && imagePath.isNotEmpty) {
       final file = File(imagePath);
       if (await file.exists()) {
-        _profileImagePath = imagePath;
+        setState(() {
+          _profileImagePath = imagePath;
+        });
       }
     }
-
-    // Load other profile data
-    final displayName = prefs.getString('display_name_$_currentUserId');
-    final biography = prefs.getString('biography_$_currentUserId');
-    final artisticLevel = prefs.getString('artistic_level_$_currentUserId');
-
-    setState(() {
-      _displayNameController.text = displayName ?? 'Amante del Arte';
-      _biographyController.text = biography ?? 'Apasionado por aprender arte y explorar diferentes técnicas. Me encanta la acuarela y el dibujo!';
-      _artisticLevel = artisticLevel ?? 'Principiante';
-    });
   }
 
   Future<void> _saveProfileImage(String path) async {
-    if (_currentUserId == null) return;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('profile_image_path_$_currentUserId', path);
-  }
-
-  Future<void> _saveProfileData() async {
-    if (_currentUserId == null) return;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('display_name_$_currentUserId', _displayNameController.text);
-    await prefs.setString('biography_$_currentUserId', _biographyController.text);
-    await prefs.setString('artistic_level_$_currentUserId', _artisticLevel);
+    await prefs.setString('admin_profile_image_path', path);
   }
 
   Future<void> _pickProfileImage() async {
@@ -103,6 +71,17 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void _saveProfile() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('¡Perfil guardado!')),
+    );
+  }
+
+  void _logout() {
+    context.read<AuthBloc>().add(AuthLogoutRequested());
+    context.go('/welcome');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,24 +90,19 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Perfil',
+          'Perfil de Admin',
           style: TextStyle(
             color: AppTheme.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: AppTheme.errorColor),
-            onPressed: _logout,
-            tooltip: 'Cerrar Sesión',
-          ),
           TextButton(
-            onPressed: _saveProfile,
+            onPressed: _logout,
             child: const Text(
-              'Guardar',
+              'Cerrar Sesión',
               style: TextStyle(
-                color: AppTheme.primaryBlue,
+                color: AppTheme.errorColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -201,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 labelText: 'Nivel Artístico',
                 border: OutlineInputBorder(),
               ),
-              items: ['Principiante', 'Intermedio', 'Avanzado']
+              items: ['Principiante', 'Intermedio', 'Avanzado', 'Experto']
                   .map((level) => DropdownMenuItem(
                         value: level,
                         child: Text(level),
@@ -213,24 +187,31 @@ class _ProfilePageState extends State<ProfilePage> {
                 });
               },
             ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryBlue,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Guardar Perfil',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-
-  void _saveProfile() async {
-    await _saveProfileData();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('¡Perfil guardado!')),
-      );
-    }
-  }
-
-  void _logout() {
-    context.read<AuthBloc>().add(AuthLogoutRequested());
-    context.go('/welcome');
-  }
-
 }

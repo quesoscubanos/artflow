@@ -1,7 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/utils/responsive_helper.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
+import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
+
+// Create a ValueNotifier to listen for changes in userTutorials
+final ValueNotifier<List<Map<String, dynamic>>> userTutorialsNotifier = ValueNotifier(userTutorials);
 
 class MainNavigationPage extends StatefulWidget {
   final Widget child; 
@@ -63,27 +70,27 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),
             activeIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            label: 'Inicio',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.photo_library_outlined),
             activeIcon: Icon(Icons.photo_library),
-            label: 'Gallery',
+            label: 'Galería',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.school_outlined),
             activeIcon: Icon(Icons.school),
-            label: 'Tutorials',
+            label: 'Tutoriales',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.emoji_events_outlined),
             activeIcon: Icon(Icons.emoji_events),
-            label: 'Challenges',
+            label: 'Desafíos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outlined),
             activeIcon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'Perfil',
           ),
         ],
       ),
@@ -107,27 +114,27 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
               NavigationRailDestination(
                 icon: Icon(Icons.dashboard_outlined),
                 selectedIcon: Icon(Icons.dashboard),
-                label: Text('Dashboard'),
+                label: Text('Inicio'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.photo_library_outlined),
                 selectedIcon: Icon(Icons.photo_library),
-                label: Text('Gallery'),
+                label: Text('Galería'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.school_outlined),
                 selectedIcon: Icon(Icons.school),
-                label: Text('Tutorials'),
+                label: Text('Tutoriales'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.emoji_events_outlined),
                 selectedIcon: Icon(Icons.emoji_events),
-                label: Text('Challenges'),
+                label: Text('Desafíos'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.person_outlined),
                 selectedIcon: Icon(Icons.person),
-                label: Text('Profile'),
+                label: Text('Perfil'),
               ),
             ],
           ),
@@ -156,27 +163,27 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
               NavigationRailDestination(
                 icon: Icon(Icons.dashboard_outlined),
                 selectedIcon: Icon(Icons.dashboard),
-                label: Text('Dashboard'),
+                label: Text('Inicio'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.photo_library_outlined),
                 selectedIcon: Icon(Icons.photo_library),
-                label: Text('Gallery'),
+                label: Text('Galería'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.school_outlined),
                 selectedIcon: Icon(Icons.school),
-                label: Text('Tutorials'),
+                label: Text('Tutoriales'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.emoji_events_outlined),
                 selectedIcon: Icon(Icons.emoji_events),
-                label: Text('Challenges'),
+                label: Text('Desafíos'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.person_outlined),
                 selectedIcon: Icon(Icons.person),
-                label: Text('Profile'),
+                label: Text('Perfil'),
               ),
             ],
           ),
@@ -200,172 +207,193 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.palette,
-                size: 20,
-                color: AppTheme.primaryBlue,
-              ),
+    return BlocBuilder<TutorialsBloc, TutorialsState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            title: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Image.asset(
+                    'logo/logo.png',
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'ArtFlowRise',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            const Text(
-              'DrawIt',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.help_outline),
+                onPressed: () {},
+                color: AppTheme.textSecondary,
               ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {},
-            color: AppTheme.textSecondary,
+            ],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: ResponsiveHelper.getResponsivePadding(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildMixedContentFeed(context),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMixedContentFeed(BuildContext context) {
-    final mixedContent = [
-      {
-        'type': 'tutorial',
-        'title': 'Step 1: Begin with a light sketch of the basic shapes. Focus on proportions and overall composition.',
-        'image': 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-RsqcGbjsXj2IVHIPXlqHSJEEebxYC4.png',
-        'author': 'ArtFlowRise',
-        'isOfficial': true,
-        'progress': 0.2,
-      },
-      {
-        'type': 'gallery',
-        'title': 'My latest watercolor painting',
-        'image': null,
-        'author': 'Sarah_Artist',
-        'isOfficial': false,
-        'likes': 24,
-      },
-      {
-        'type': 'tutorial',
-        'title': 'Dibujo con Perspectiva - Paso 2 de 7',
-        'image': 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cuZsr9QKrPQ96oFDHJ6VN4EaFxvDCz.png',
-        'author': 'ArtFlowRise',
-        'isOfficial': true,
-        'progress': 0.3,
-      },
-      {
-        'type': 'gallery',
-        'title': 'Portrait practice session',
-        'image': null,
-        'author': 'Mike_Draws',
-        'isOfficial': false,
-        'likes': 18,
-      },
-      {
-        'type': 'tutorial',
-        'title': 'Color Theory Fundamentals',
-        'image': null,
-        'author': 'ArtFlowRise',
-        'isOfficial': true,
-        'progress': 0.0,
-      },
-    ];
-
-    if (ResponsiveHelper.isDesktop(context)) {
-      return GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context, mobile: 1, tablet: 2, desktop: 3),
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: mixedContent.length,
-        itemBuilder: (context, index) {
-          final item = mixedContent[index];
-          
-          if (item['type'] == 'tutorial') {
-            return _buildTutorialCard(
-              context,
-              item['title'] as String,
-              item['image'] as String?,
-              item['author'] as String,
-              item['isOfficial'] as bool,
-              item['progress'] as double,
-            );
-          } else {
-            return _buildGalleryCard(
-              context,
-              item['title'] as String,
-              item['image'] as String?,
-              item['author'] as String,
-              item['likes'] as int,
-            );
-          }
-        },
-      );
-    }
-
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: mixedContent.length,
-      itemBuilder: (context, index) {
-        final item = mixedContent[index];
-        
-        if (item['type'] == 'tutorial') {
-          return _buildTutorialCard(
-            context,
-            item['title'] as String,
-            item['image'] as String?,
-            item['author'] as String,
-            item['isOfficial'] as bool,
-            item['progress'] as double,
-          );
-        } else {
-          return _buildGalleryCard(
-            context,
-            item['title'] as String,
-            item['image'] as String?,
-            item['author'] as String,
-            item['likes'] as int,
-          );
-        }
+          body: SingleChildScrollView(
+            padding: ResponsiveHelper.getResponsivePadding(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildMixedContentFeed(context, state),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
 
-  Widget _buildTutorialCard(BuildContext context, String title, String? imageUrl, String author, bool isOfficial, double progress) {
+  Widget _buildMixedContentFeed(BuildContext context, TutorialsState state) {
+    // Listen to the mutable gallery list (userTutorialsNotifier) and official tutorials
+    return ValueListenableBuilder<List<Map<String, dynamic>>>(
+      valueListenable: userTutorialsNotifier,
+      builder: (context, userList, _) {
+        return ValueListenableBuilder<List<Map<String, dynamic>>>(
+          valueListenable: officialTutorialsNotifier,
+          builder: (context, officialList, _) {
+            final tutorials = state is TutorialsLoaded ? state.tutorials : [];
+
+            // Build a combined list of references to the original data sources.
+            // Each entry contains a 'type' and a 'source' reference (no deep copy).
+            final List<Map<String, dynamic>> mixedContent = [];
+
+            // Add admin/tutorial items from Bloc (admin dashboard creations)
+            for (final t in tutorials) {
+              mixedContent.add({
+                'type': 'tutorial',
+                'source': t,
+              });
+            }
+
+            // Add official tutorial items (admin "Create Tutorial" creations)
+            for (final t in officialList) {
+              mixedContent.add({
+                'type': 'tutorial',
+                'source': t,
+              });
+            }
+
+            // Add user/gallery items (source is the original user tutorial map)
+            for (final g in userList) {
+              mixedContent.add({
+                'type': 'gallery',
+                'source': g,
+              });
+            }
+
+            // Render using the live sources so any mutation in tutorials or userTutorials
+            // is immediately reflected in the dashboard.
+            if (ResponsiveHelper.isDesktop(context)) {
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context, mobile: 1, tablet: 2, desktop: 3),
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.0,
+                ),
+                itemCount: mixedContent.length,
+                itemBuilder: (context, index) {
+                  final item = mixedContent[index];
+                  final src = item['source'] as Map<String, dynamic>;
+
+                  if (item['type'] == 'tutorial') {
+                    return _buildTutorialCard(
+                      context,
+                      src['title'] as String,
+                      src['description'] as String,
+                      src['imagePath'] as String? ?? src['image'] as String?,
+                      src['author'] as String,
+                      src['isOfficial'] as bool,
+                      (src['progress'] ?? 0.0) as double,
+                    );
+                  } else {
+                    // gallery item - may contain 'images' list for previews
+                    final imagePreview = (src['images'] != null && (src['images'] as List).isNotEmpty)
+                        ? ((src['images'] as List).first is Map ? (src['images'] as List).first['path'] : (src['images'] as List).first)
+                        : src['image'] as String? ?? 'images/perspective.png';
+
+                    return _buildGalleryCard(
+                      context,
+                      src['title'] as String,
+                      src['description'] as String,
+                      imagePreview as String?,
+                      src['author'] as String,
+                      src['likes'] as int? ?? 0,
+                    );
+                  }
+                },
+              );
+            }
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: mixedContent.length,
+              itemBuilder: (context, index) {
+                final item = mixedContent[index];
+                final src = item['source'] as Map<String, dynamic>;
+
+                if (item['type'] == 'tutorial') {
+                  return _buildTutorialCard(
+                    context,
+                    src['title'] as String,
+                    src['description'] as String,
+                    src['imagePath'] as String? ?? src['image'] as String?,
+                    src['author'] as String,
+                    src['isOfficial'] as bool,
+                    (src['progress'] ?? 0.0) as double,
+                  );
+                } else {
+                  final imagePreview = (src['images'] != null && (src['images'] as List).isNotEmpty)
+                      ? ((src['images'] as List).first is Map ? (src['images'] as List).first['path'] : (src['images'] as List).first)
+                      : src['image'] as String? ?? 'images/perspective.png';
+
+                  return _buildGalleryCard(
+                    context,
+                    src['title'] as String,
+                    src['description'] as String,
+                    imagePreview as String?,
+                    src['author'] as String,
+                    src['likes'] as int? ?? 0,
+                  );
+                }
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildTutorialCard(BuildContext context, String title, String description, String? imageUrl, String author, bool isOfficial, double progress) {
     final cardHeight = ResponsiveHelper.isDesktop(context) ? 180.0 : 120.0;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -376,26 +404,33 @@ class DashboardPage extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               color: Colors.grey[100],
             ),
-            child: imageUrl != null
+            child: imageUrl != null && imageUrl.isNotEmpty
                 ? ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Image.network(
-                      imageUrl,
+                    child: Image.file(
+                      File(imageUrl),
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: AppTheme.primaryBlue.withOpacity(0.1),
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 48,
-                            color: AppTheme.textLight,
-                          ),
+                        // If reading the file fails, attempt to load as an asset.
+                        return Image.asset(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error2, stackTrace2) {
+                            return Container(
+                              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                              child: Icon(
+                                Icons.image_not_supported,
+                                size: 48,
+                                color: AppTheme.textLight,
+                              ),
+                            );
+                          },
                         );
                       },
                     ),
                   )
                 : Container(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     child: Icon(
                       Icons.school,
                       size: 48,
@@ -403,115 +438,32 @@ class DashboardPage extends StatelessWidget {
                     ),
                   ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                      child: Icon(
-                        Icons.person,
-                        size: 16,
-                        color: AppTheme.primaryBlue,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        author,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                    ),
-                    if (isOfficial) ...[ 
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryBlue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'OFFICIAL',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryBlue,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 12),
-                
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                     color: AppTheme.textPrimary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppTheme.textSecondary,
                     height: 1.4,
                   ),
                   maxLines: ResponsiveHelper.isDesktop(context) ? 3 : 2,
                   overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 12),
-                
-                if (progress > 0) ...[ 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          backgroundColor: Colors.grey[200],
-                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${(progress * 100).toInt()}%',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: progress > 0 ? AppTheme.primaryPink : AppTheme.primaryBlue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(progress > 0 ? 'Continue' : 'Start'),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.favorite_border),
-                      onPressed: () {},
-                      color: AppTheme.textLight,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.bookmark_border),
-                      onPressed: () {},
-                      color: AppTheme.textLight,
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -521,12 +473,13 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildGalleryCard(BuildContext context, String title, String? imageUrl, String author, int likes) {
+  Widget _buildGalleryCard(BuildContext context, String title, String description, String? imageUrl, String author, int likes) {
     final cardHeight = ResponsiveHelper.isDesktop(context) ? 180.0 : 120.0;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -537,92 +490,90 @@ class DashboardPage extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               color: Colors.grey[100],
             ),
-            child: Container(
-              color: AppTheme.primaryPink.withOpacity(0.1),
-              child: Icon(
-                Icons.image,
-                size: 48,
-                color: AppTheme.primaryPink,
-              ),
-            ),
+            child: imageUrl != null && imageUrl.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    child: Builder(builder: (context) {
+                      try {
+                        final file = File(imageUrl);
+                        if (file.existsSync()) {
+                          return Image.file(
+                            file,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryPink.withValues(alpha: 0.1),
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  size: 48,
+                                  color: AppTheme.primaryPink,
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          return Image.asset(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryPink.withValues(alpha: 0.1),
+                                child: Icon(
+                                  Icons.image,
+                                  size: 48,
+                                  color: AppTheme.primaryPink,
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      } catch (e) {
+                        return Container(
+                          color: AppTheme.primaryPink.withValues(alpha: 0.1),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 48,
+                            color: AppTheme.primaryPink,
+                          ),
+                        );
+                      }
+                    }),
+                  )
+                : Container(
+                    color: AppTheme.primaryPink.withValues(alpha: 0.1),
+                    child: Icon(
+                      Icons.image,
+                      size: 48,
+                      color: AppTheme.primaryPink,
+                    ),
+                  ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: AppTheme.primaryPink.withOpacity(0.1),
-                      child: Icon(
-                        Icons.person,
-                        size: 16,
-                        color: AppTheme.primaryPink,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        author,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                     color: AppTheme.textPrimary,
                   ),
-                  maxLines: ResponsiveHelper.isDesktop(context) ? 2 : 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 12),
-                
-                Row(
-                  children: [
-                    Icon(
-                      Icons.favorite,
-                      size: 20,
-                      color: AppTheme.primaryPink,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$likes',
-                      style: TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.comment_outlined,
-                      size: 20,
-                      color: AppTheme.textLight,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${likes ~/ 3}',
-                      style: TextStyle(
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.share),
-                      onPressed: () {},
-                      color: AppTheme.textLight,
-                    ),
-                  ],
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppTheme.textSecondary,
+                    height: 1.4,
+                  ),
+                  maxLines: ResponsiveHelper.isDesktop(context) ? 3 : 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

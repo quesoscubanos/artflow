@@ -1,8 +1,272 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
+import 'package:artflowrise/features/tutorials/presentation/pages/tutorial_detail_page.dart';
 
-class AdminDashboardPage extends StatelessWidget {
+class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
+
+  @override
+  State<AdminDashboardPage> createState() => _AdminDashboardPageState();
+}
+
+class _AdminDashboardPageState extends State<AdminDashboardPage> {
+  void _editTutorial(Map<String, dynamic> tutorial, bool? isOfficial) {
+    final titleController = TextEditingController(text: tutorial['title']);
+    final descriptionController = TextEditingController(text: tutorial['description']);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Edit Tutorial'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(labelText: 'Title'),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+                maxLines: 3,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Find the original tutorial and update it
+              if (isOfficial == true) {
+                final originalTutorial = officialTutorials.firstWhere((t) => t['id'] == tutorial['id']);
+                originalTutorial['title'] = titleController.text;
+                originalTutorial['description'] = descriptionController.text;
+                officialTutorialsNotifier.value = List.from(officialTutorials);
+              } else {
+                final originalTutorial = userTutorials.firstWhere((t) => t['id'] == tutorial['id']);
+                originalTutorial['title'] = titleController.text;
+                originalTutorial['description'] = descriptionController.text;
+                userTutorialsNotifier.value = List.from(userTutorials);
+              }
+
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Tutorial updated successfully')),
+              );
+            },
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteTutorial(Map<String, dynamic> tutorial, bool? isOfficial) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Delete Tutorial'),
+        content: Text(
+          'Are you sure you want to delete the tutorial "${tutorial['title']}"? This action will permanently remove the tutorial from the system. Only admins can perform this action.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (isOfficial == true) {
+                // Find and remove the original tutorial from officialTutorials
+                officialTutorials.removeWhere((t) => t['id'] == tutorial['id']);
+                // Update allTutorialsData for tutorial detail pages
+                allTutorialsData.remove(tutorial['id']);
+                officialTutorialsNotifier.value = List.from(officialTutorials);
+              } else {
+                // Find and remove the original tutorial from userTutorials
+                userTutorials.removeWhere((t) => t['id'] == tutorial['id']);
+                userTutorialsNotifier.value = List.from(userTutorials);
+              }
+
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Tutorial deleted successfully')),
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTutorialCard(Map<String, dynamic> tutorial, bool? isOfficial) {
+    final imageUrl = tutorial['images'] != null && (tutorial['images'] as List).isNotEmpty
+        ? ((tutorial['images'] as List).first is Map
+            ? (tutorial['images'] as List).first['path']
+            : (tutorial['images'] as List).first)
+        : 'images/perspective.png';
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
+      child: InkWell(
+        onTap: () => _openTutorialDetail(tutorial, isOfficial ?? false),
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                color: Colors.grey[100],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                child: imageUrl != null && imageUrl.isNotEmpty
+                    ? Image.file(
+                        File(imageUrl),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'images/perspective.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                                child: const Icon(
+                                  Icons.image_not_supported,
+                                  size: 24,
+                                  color: AppTheme.textLight,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      )
+                    : Container(
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                        child: const Icon(
+                          Icons.school,
+                          size: 24,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          tutorial['title'],
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isOfficial == true)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'OFFICIAL',
+                            style: TextStyle(
+                              fontSize: 5,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryBlue,
+                            ),
+                          ),
+                        ),
+                      PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        iconSize: 14,
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'edit':
+                              _editTutorial(tutorial, isOfficial);
+                              break;
+                            case 'delete':
+                              _deleteTutorial(tutorial, isOfficial);
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Text('Edit'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    tutorial['description'],
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: AppTheme.textSecondary,
+                      height: 1.2,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'By: ${tutorial['author']}',
+                    style: const TextStyle(
+                      fontSize: 8,
+                      color: AppTheme.textLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openTutorialDetail(Map<String, dynamic> tutorial, bool? isOfficial) {
+    // Navigate to tutorial detail page for all tutorials (both official and user-uploaded)
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TutorialDetailPage(
+          tutorialId: tutorial['id'],
+          initialStep: 0,
+          isAdmin: true,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +281,7 @@ class AdminDashboardPage extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withOpacity(0.1),
+                color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
@@ -36,186 +300,70 @@ class AdminDashboardPage extends StatelessWidget {
             ),
           ],
         ),
+        actions: null,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.5,
-              children: [
-                _buildStatCard('Total Users', '1,234', Icons.people, AppTheme.primaryBlue),
-                _buildStatCard('Active Tutorials', '89', Icons.school, AppTheme.primaryPink),
-                _buildStatCard('Pending Reviews', '23', Icons.pending, Colors.orange),
-                _buildStatCard('Gallery Posts', '456', Icons.image, Colors.green),
-              ],
-            ),
-            const SizedBox(height: 32),
-            
-            const Text(
-              'Recent Activity',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                final activities = [
-                  {'text': 'Sarah_Artist uploaded a new artwork', 'icon': Icons.image, 'time': '2 hours ago'},
-                  {'text': 'Mike_Draws completed a tutorial', 'icon': Icons.school, 'time': '3 hours ago'},
-                  {'text': 'New user Emma_Art registered', 'icon': Icons.person_add, 'time': '5 hours ago'},
-                  {'text': 'Tutorial was approved', 'icon': Icons.check_circle, 'time': '6 hours ago'},
-                  {'text': 'Content was reported', 'icon': Icons.report, 'time': '8 hours ago'},
-                ];
-                
-                final activity = activities[index];
-                return _buildActivityItem(
-                  activity['text'] as String,
-                  activity['time'] as String,
-                  activity['icon'] as IconData,
-                );
-              },
-            ),
-            
-            const SizedBox(height: 32),
-            
-            const Text(
-              'Quick Actions',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 2,
-              children: [
-                _buildActionCard('Manage Users', Icons.people, () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('User management feature coming soon!')),
-                  );
-                }),
-                _buildActionCard('Review Content', Icons.rate_review, () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Content review feature coming soon!')),
-                  );
-                }),
-                _buildActionCard('Create Tutorial', Icons.add_circle, () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Tutorial creation feature coming soon!')),
-                  );
-                }),
-                _buildActionCard('View Reports', Icons.analytics, () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Reports feature coming soon!')),
-                  );
-                }),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+      body: ValueListenableBuilder<List<Map<String, dynamic>>>(
+        valueListenable: userTutorialsNotifier,
+        builder: (context, userTutorialsList, _) {
+          return ValueListenableBuilder<List<Map<String, dynamic>>>(
+            valueListenable: officialTutorialsNotifier,
+            builder: (context, officialTutorialsList, _) {
+              // Combine official and user tutorials
+              final List<Map<String, dynamic>> allTutorials = [
+                ...officialTutorialsList.map((t) => {...t, 'isOfficial': true}),
+                ...userTutorialsList.map((t) => {...t, 'isOfficial': false}),
+              ];
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActivityItem(String activity, String time, IconData icon) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-          child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
-        ),
-        title: Text(
-          activity,
-          style: const TextStyle(fontSize: 14),
-        ),
-        subtitle: Text(
-          time,
-          style: const TextStyle(fontSize: 12, color: AppTheme.textLight),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionCard(String title, IconData icon, VoidCallback onTap) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(icon, color: AppTheme.primaryBlue),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimary,
+              if (allTutorials.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.waving_hand,
+                        size: 80,
+                        color: AppTheme.primaryBlue,
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        '👉 "Welcome, Admin"',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Tutorials will appear here',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
+                );
+              }
+
+              return GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 0.7,
                 ),
-              ),
-            ],
-          ),
-        ),
+                itemCount: allTutorials.length,
+                itemBuilder: (context, index) {
+                  final tutorial = allTutorials[index];
+                  final isOfficial = tutorial['isOfficial'] as bool? ?? false;
+                  return _buildTutorialCard(tutorial, isOfficial);
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

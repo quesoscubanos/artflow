@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
+import 'package:artflowrise/core/data/tutorial_data.dart';
 
 class TutorialsPage extends StatefulWidget {
   const TutorialsPage({super.key});
@@ -10,45 +11,6 @@ class TutorialsPage extends StatefulWidget {
 }
 
 class _TutorialsPageState extends State<TutorialsPage> {
-  final List<Map<String, dynamic>> _tutorials = [
-    {
-      'id': '1',
-      'title': 'Drawing Fundamentals',
-      'description': 'Learn the basics of drawing',
-      'author': 'ArtFlowRise Team',
-      'level': 'Beginner',
-      'duration': '45 min',
-      'isOfficial': true,
-    },
-    {
-      'id': 'perspective-drawing',
-      'title': 'Drawing with Perspective',
-      'description': 'Master perspective techniques',
-      'author': 'ArtFlowRise Team',
-      'level': 'Intermediate',
-      'duration': '60 min',
-      'isOfficial': true,
-    },
-    {
-      'id': '3',
-      'title': 'Color Theory',
-      'description': 'Understanding colors and harmony',
-      'author': 'Color_Expert',
-      'level': 'Beginner',
-      'duration': '30 min',
-      'isOfficial': false,
-    },
-    {
-      'id': '4',
-      'title': 'Portrait Techniques',
-      'description': 'Drawing realistic portraits',
-      'author': 'Portrait_Master',
-      'level': 'Advanced',
-      'duration': '90 min',
-      'isOfficial': false,
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,22 +25,18 @@ class _TutorialsPageState extends State<TutorialsPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: AppTheme.textSecondary),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Create tutorial feature coming soon!')),
-              );
-            },
-          ),
-        ],
+        actions: null,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _tutorials.length,
-        itemBuilder: (context, index) {
-          return _buildTutorialCard(_tutorials[index]);
+      body: ValueListenableBuilder<List<Map<String, dynamic>>>(
+        valueListenable: officialTutorialsNotifier,
+        builder: (context, tutorials, _) {
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: tutorials.length,
+            itemBuilder: (context, index) {
+              return _buildTutorialCard(tutorials[index]);
+            },
+          );
         },
       ),
     );
@@ -107,18 +65,24 @@ class _TutorialsPageState extends State<TutorialsPage> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.primaryBlue.withOpacity(0.3),
-                    AppTheme.primaryPink.withOpacity(0.3),
-                  ],
-                ),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
-                Icons.play_circle_outline,
-                size: 32,
-                color: Colors.white,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  'images/perspective.png',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                      child: const Icon(
+                        Icons.image,
+                        size: 32,
+                        color: AppTheme.primaryBlue,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -143,7 +107,7 @@ class _TutorialsPageState extends State<TutorialsPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue.withOpacity(0.1),
+                            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
@@ -173,7 +137,7 @@ class _TutorialsPageState extends State<TutorialsPage> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryBlue.withOpacity(0.1),
+                          color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(

@@ -12,7 +12,11 @@ class SplashPage extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          context.go('/dashboard');
+          if (state.isAdmin) {
+            context.go('/admin');
+          } else {
+            context.go('/dashboard');
+          }
         } else if (state is AuthUnauthenticated) {
           // Navigate to welcome page instead of login directly
           context.go('/welcome');
@@ -28,13 +32,14 @@ class SplashPage extends StatelessWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: Icon(
-                  Icons.palette,
-                  size: 60,
-                  color: AppTheme.primaryBlue,
+                child: Image.asset(
+                  'logo/logo.png',
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 24),
@@ -53,7 +58,7 @@ class SplashPage extends StatelessWidget {
               
               // Tagline
               const Text(
-                'Unleash Your Creative Potential',
+                'Libera Tu Potencial Creativo',
                 style: TextStyle(
                   fontSize: 16,
                   color: AppTheme.textSecondary,
