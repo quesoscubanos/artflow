@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
+import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 
 // Tutorial data model
 class Tutorial {
@@ -235,13 +238,28 @@ class TutorialDetailPage extends StatefulWidget {
 class _TutorialDetailPageState extends State<TutorialDetailPage> {
   late int currentStepIndex;
   late Tutorial tutorial;
+  late String userId;
+  bool _initialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    // In a real app, you'd fetch the tutorial by ID
-    tutorial = allTutorialsData[widget.tutorialId] ?? allTutorialsData.values.first;
-    currentStepIndex = widget.initialStep.clamp(0, tutorial.steps.length - 1);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
+      // Get current user
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        userId = authState.userId;
+      } else {
+        userId = 'guest'; // Fallback, but should not happen
+      }
+
+      // In a real app, you'd fetch the tutorial by ID
+      tutorial = allTutorialsData[widget.tutorialId] ?? allTutorialsData.values.first;
+
+      // Load saved progress
+      _loadProgress();
+    }
   }
 
   TutorialStep get currentStep => tutorial.steps[currentStepIndex];
@@ -252,6 +270,7 @@ class _TutorialDetailPageState extends State<TutorialDetailPage> {
       setState(() {
         currentStepIndex--;
       });
+      _saveProgress();
     }
   }
 
@@ -260,17 +279,23 @@ class _TutorialDetailPageState extends State<TutorialDetailPage> {
       setState(() {
         currentStepIndex++;
       });
+      _saveProgress();
     }
   }
 
-  void _markAsCompleted() {
-    // In a real app, you'd save progress to a database
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('¡Tutorial marcado como completado!'),
-        backgroundColor: AppTheme.primaryBlue,
-      ),
-    );
+  Future<void> _loadProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'tutorial_progress_${userId}_${widget.tutorialId}';
+    final savedStep = prefs.getInt(key) ?? widget.initialStep;
+    setState(() {
+      currentStepIndex = savedStep.clamp(0, tutorial.steps.length - 1);
+    });
+  }
+
+  Future<void> _saveProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'tutorial_progress_${userId}_${widget.tutorialId}';
+    await prefs.setInt(key, currentStepIndex);
   }
 
   @override
@@ -427,30 +452,6 @@ class _TutorialDetailPageState extends State<TutorialDetailPage> {
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Mark as completed button
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: _markAsCompleted,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(color: AppTheme.primaryPink),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Marcar como Completado',
-                        style: TextStyle(
-                          color: AppTheme.primaryPink,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),

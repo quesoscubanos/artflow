@@ -16,16 +16,26 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final ImagePicker _picker = ImagePicker();
-  final _displayNameController = TextEditingController(text: 'Amante del Arte');
-  final _biographyController = TextEditingController(text: 'Apasionado por aprender arte y explorar diferentes técnicas. Me encanta la acuarela y el dibujo!');
+  final _displayNameController = TextEditingController();
+  final _biographyController = TextEditingController();
   String _artisticLevel = 'Principiante';
   File? _profileImage;
   String? _profileImagePath;
+  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
-    _loadProfileImage();
+    _initializeProfile();
+  }
+
+  Future<void> _initializeProfile() async {
+    // Get current user ID from AuthBloc
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      _currentUserId = authState.userId;
+      await _loadProfileData();
+    }
   }
 
   @override
@@ -35,23 +45,45 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  Future<void> _loadProfileImage() async {
+  Future<void> _loadProfileData() async {
+    if (_currentUserId == null) return;
+
     final prefs = await SharedPreferences.getInstance();
-    final imagePath = prefs.getString('profile_image_path');
+
+    // Load profile image
+    final imagePath = prefs.getString('profile_image_path_$_currentUserId');
     if (imagePath != null && imagePath.isNotEmpty) {
       final file = File(imagePath);
       if (await file.exists()) {
-        setState(() {
-          _profileImagePath = imagePath;
-          _profileImage = file;
-        });
+        _profileImagePath = imagePath;
+        _profileImage = file;
       }
     }
+
+    // Load other profile data
+    final displayName = prefs.getString('display_name_$_currentUserId');
+    final biography = prefs.getString('biography_$_currentUserId');
+    final artisticLevel = prefs.getString('artistic_level_$_currentUserId');
+
+    setState(() {
+      _displayNameController.text = displayName ?? 'Amante del Arte';
+      _biographyController.text = biography ?? 'Apasionado por aprender arte y explorar diferentes técnicas. Me encanta la acuarela y el dibujo!';
+      _artisticLevel = artisticLevel ?? 'Principiante';
+    });
   }
 
   Future<void> _saveProfileImage(String path) async {
+    if (_currentUserId == null) return;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('profile_image_path', path);
+    await prefs.setString('profile_image_path_$_currentUserId', path);
+  }
+
+  Future<void> _saveProfileData() async {
+    if (_currentUserId == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('display_name_$_currentUserId', _displayNameController.text);
+    await prefs.setString('biography_$_currentUserId', _biographyController.text);
+    await prefs.setString('artistic_level_$_currentUserId', _artisticLevel);
   }
 
   Future<void> _pickProfileImage() async {
@@ -189,8 +221,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _saveProfile() {
-    // TODO: Implement save logic
+  void _saveProfile() async {
+    await _saveProfileData();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('¡Perfil guardado!')),
     );

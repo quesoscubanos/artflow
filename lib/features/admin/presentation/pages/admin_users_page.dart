@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -10,27 +11,21 @@ class AdminUsersPage extends StatefulWidget {
 }
 
 class _AdminUsersPageState extends State<AdminUsersPage> {
-  // Mock users list - in real app, this would come from a service
-  final List<Map<String, dynamic>> _users = [
-    {
-      'id': '1',
-      'username': 'User1',
-      'email': 'usuario1@gmail.com',
-      'isAdmin': false,
-      'joinDate': '2024-01-15',
-      'tutorialsCreated': 5,
-      'challengesCompleted': 12,
-    },
-    {
-      'id': '2',
-      'username': 'Admin',
-      'email': 'admin@gmail.com',
-      'isAdmin': true,
-      'joinDate': '2024-01-01',
-      'tutorialsCreated': 0,
-      'challengesCompleted': 0,
-    },
-  ];
+  late AuthBloc _authBloc;
+  List<MockUser> _users = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = BlocProvider.of<AuthBloc>(context);
+    _loadUsers();
+  }
+
+  void _loadUsers() {
+    setState(() {
+      _users = _authBloc.getAllUsers();
+    });
+  }
 
   void _showCreateUserDialog() {
     final usernameController = TextEditingController();
@@ -69,8 +64,23 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              // TODO: Implement user creation
+            onPressed: () async {
+              // Create new user
+              final newId = (_users.length + 1).toString();
+              final joinDate = DateTime.now().toIso8601String().split('T').first;
+
+              final newUser = MockUser(
+                id: newId,
+                email: emailController.text,
+                password: passwordController.text, // In real app, hash this
+                username: usernameController.text,
+                isAdmin: false,
+                joinDate: joinDate,
+              );
+
+              await _authBloc.addUser(newUser);
+              _loadUsers(); // Refresh the list
+
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('User created successfully')),
@@ -83,9 +93,9 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     );
   }
 
-  void _showEditUserDialog(Map<String, dynamic> user) {
-    final usernameController = TextEditingController(text: user['username']);
-    final emailController = TextEditingController(text: user['email']);
+  void _showEditUserDialog(MockUser user) {
+    final usernameController = TextEditingController(text: user.username);
+    final emailController = TextEditingController(text: user.email);
 
     showDialog(
       context: context,
@@ -114,8 +124,13 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              // TODO: Implement user update
+            onPressed: () async {
+              await _authBloc.updateUser(
+                user.id,
+                username: usernameController.text,
+                email: emailController.text,
+              );
+              _loadUsers(); // Refresh the list
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('User updated successfully')),
@@ -128,23 +143,22 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     );
   }
 
-  void _deleteUser(Map<String, dynamic> user) {
+  void _deleteUser(MockUser user) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete ${user['username']}? This action cannot be undone.'),
+        content: Text('Are you sure you want to delete ${user.username}? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              setState(() {
-                _users.remove(user);
-              });
+            onPressed: () async {
+              await _authBloc.deleteUser(user.id);
+              _loadUsers(); // Refresh the list
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('User deleted successfully')),
@@ -191,14 +205,14 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             ),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: user['isAdmin'] ? AppTheme.primaryBlue : AppTheme.primaryPink,
+                backgroundColor: user.isAdmin ? AppTheme.primaryBlue : AppTheme.primaryPink,
                 child: Icon(
-                  user['isAdmin'] ? Icons.admin_panel_settings : Icons.person,
+                  user.isAdmin ? Icons.admin_panel_settings : Icons.person,
                   color: Colors.white,
                 ),
               ),
               title: Text(
-                user['username'],
+                user.username,
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   color: AppTheme.textPrimary,
@@ -207,9 +221,9 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(user['email']),
+                  Text(user.email),
                   Text(
-                    'Joined: ${user['joinDate']}',
+                    'Joined: ${user.joinDate}',
                     style: const TextStyle(fontSize: 12),
                   ),
                 ],
