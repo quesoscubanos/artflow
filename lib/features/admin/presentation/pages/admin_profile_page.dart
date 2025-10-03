@@ -19,7 +19,6 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   final _displayNameController = TextEditingController(text: 'Usuario Admin');
   final _biographyController = TextEditingController(text: 'Administrador de la plataforma ArtFlowRise. Gestionando tutoriales y contenido de usuarios.');
   String _artisticLevel = 'Experto';
-  File? _profileImage;
   String? _profileImagePath;
 
   @override
@@ -43,7 +42,6 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
       if (await file.exists()) {
         setState(() {
           _profileImagePath = imagePath;
-          _profileImage = file;
         });
       }
     }
@@ -62,7 +60,6 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
         await _saveProfileImage(imagePath);
         setState(() {
           _profileImagePath = imagePath;
-          _profileImage = File(imagePath);
         });
       }
     } catch (e) {
@@ -75,7 +72,6 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   }
 
   void _saveProfile() {
-    // TODO: Implement save logic
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('¡Perfil guardado!')),
     );
@@ -173,6 +169,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
+              // ignore: deprecated_member_use
               value: _artisticLevel,
               decoration: const InputDecoration(
                 labelText: 'Nivel Artístico',

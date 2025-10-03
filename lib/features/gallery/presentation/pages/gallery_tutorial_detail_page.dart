@@ -434,6 +434,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              // ignore: deprecated_member_use
               value: _selectedCategory,
               dropdownColor: Colors.white,
               decoration: InputDecoration(
@@ -531,6 +532,7 @@ class _GalleryTutorialDetailPageState extends State<GalleryTutorialDetailPage> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              // ignore: deprecated_member_use
               value: _selectedDifficulty,
               dropdownColor: Colors.white,
               decoration: InputDecoration(

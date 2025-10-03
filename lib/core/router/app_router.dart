@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
 import 'package:artflowrise/features/auth/presentation/pages/login_page.dart';
 import 'package:artflowrise/features/auth/presentation/pages/register_page.dart';
 import 'package:artflowrise/features/auth/presentation/pages/splash_page.dart';
@@ -11,11 +10,6 @@ import 'package:artflowrise/features/tutorials/presentation/pages/tutorials_page
 import 'package:artflowrise/features/tutorials/presentation/pages/tutorial_detail_page.dart';
 import 'package:artflowrise/features/challenges/presentation/pages/challenges_page.dart';
 import 'package:artflowrise/features/admin/presentation/pages/admin_main_navigation_page.dart';
-import 'package:artflowrise/features/admin/presentation/pages/admin_dashboard_page.dart';
-import 'package:artflowrise/features/admin/presentation/pages/admin_users_page.dart';
-import 'package:artflowrise/features/admin/presentation/pages/admin_challenges_page.dart';
-import 'package:artflowrise/features/admin/presentation/pages/admin_tutorials_page.dart';
-import 'package:artflowrise/features/admin/presentation/pages/admin_settings_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(

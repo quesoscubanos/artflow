@@ -110,7 +110,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -157,8 +157,8 @@ class _ChallengesPageState extends State<ChallengesPage> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppTheme.primaryBlue.withOpacity(0.3),
-                        AppTheme.primaryPink.withOpacity(0.3),
+                        AppTheme.primaryBlue.withValues(alpha: 0.3),
+                        AppTheme.primaryPink.withValues(alpha: 0.3),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(8),
@@ -205,7 +205,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getDifficultyColor(challenge['difficulty']).withOpacity(0.2),
+                    color: _getDifficultyColor(challenge['difficulty']).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

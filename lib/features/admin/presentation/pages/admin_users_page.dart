@@ -81,10 +81,14 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
               await _authBloc.addUser(newUser);
               _loadUsers(); // Refresh the list
 
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User created successfully')),
-              );
+              if (mounted) {
+                // ignore: use_build_context_synchronously
+                Navigator.of(context).pop();
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('User created successfully')),
+                );
+              }
             },
             child: const Text('Create'),
           ),
@@ -131,10 +135,14 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                 email: emailController.text,
               );
               _loadUsers(); // Refresh the list
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User updated successfully')),
-              );
+              if (mounted) {
+                // ignore: use_build_context_synchronously
+                Navigator.of(context).pop();
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('User updated successfully')),
+                );
+              }
             },
             child: const Text('Update'),
           ),
@@ -159,10 +167,14 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             onPressed: () async {
               await _authBloc.deleteUser(user.id);
               _loadUsers(); // Refresh the list
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User deleted successfully')),
-              );
+              if (mounted) {
+                // ignore: use_build_context_synchronously
+                Navigator.of(context).pop();
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('User deleted successfully')),
+                );
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Delete'),

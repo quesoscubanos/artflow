@@ -19,7 +19,6 @@ class _ProfilePageState extends State<ProfilePage> {
   final _displayNameController = TextEditingController();
   final _biographyController = TextEditingController();
   String _artisticLevel = 'Principiante';
-  File? _profileImage;
   String? _profileImagePath;
   String? _currentUserId;
 
@@ -56,7 +55,6 @@ class _ProfilePageState extends State<ProfilePage> {
       final file = File(imagePath);
       if (await file.exists()) {
         _profileImagePath = imagePath;
-        _profileImage = file;
       }
     }
 
@@ -94,7 +92,6 @@ class _ProfilePageState extends State<ProfilePage> {
         await _saveProfileImage(imagePath);
         setState(() {
           _profileImagePath = imagePath;
-          _profileImage = File(imagePath);
         });
       }
     } catch (e) {
@@ -198,6 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
+              // ignore: deprecated_member_use
               value: _artisticLevel,
               decoration: const InputDecoration(
                 labelText: 'Nivel Artístico',
@@ -223,9 +221,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _saveProfile() async {
     await _saveProfileData();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('¡Perfil guardado!')),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('¡Perfil guardado!')),
+      );
+    }
   }
 
   void _logout() {
@@ -233,59 +233,4 @@ class _ProfilePageState extends State<ProfilePage> {
     context.go('/welcome');
   }
 
-  Widget _buildStatColumn(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.white70,
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showSettingsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Configuración'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Editar Perfil'),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('¡Función de editar perfil próximamente!')),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout, color: AppTheme.errorColor),
-              title: const Text('Cerrar Sesión', style: TextStyle(color: AppTheme.errorColor)),
-              onTap: () {
-                Navigator.pop(context);
-                context.read<AuthBloc>().add(AuthLogoutRequested());
-                context.go('/welcome');
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

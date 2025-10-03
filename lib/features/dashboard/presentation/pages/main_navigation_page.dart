@@ -220,7 +220,7 @@ class DashboardPage extends StatelessWidget {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Image.asset(
@@ -417,7 +417,7 @@ class DashboardPage extends StatelessWidget {
                           fit: BoxFit.cover,
                           errorBuilder: (context, error2, stackTrace2) {
                             return Container(
-                              color: AppTheme.primaryBlue.withOpacity(0.1),
+                              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                               child: Icon(
                                 Icons.image_not_supported,
                                 size: 48,
@@ -430,7 +430,7 @@ class DashboardPage extends StatelessWidget {
                     ),
                   )
                 : Container(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     child: Icon(
                       Icons.school,
                       size: 48,
@@ -502,7 +502,7 @@ class DashboardPage extends StatelessWidget {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
-                                color: AppTheme.primaryPink.withOpacity(0.1),
+                                color: AppTheme.primaryPink.withValues(alpha: 0.1),
                                 child: Icon(
                                   Icons.image_not_supported,
                                   size: 48,
@@ -517,7 +517,7 @@ class DashboardPage extends StatelessWidget {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
-                                color: AppTheme.primaryPink.withOpacity(0.1),
+                                color: AppTheme.primaryPink.withValues(alpha: 0.1),
                                 child: Icon(
                                   Icons.image,
                                   size: 48,
@@ -529,7 +529,7 @@ class DashboardPage extends StatelessWidget {
                         }
                       } catch (e) {
                         return Container(
-                          color: AppTheme.primaryPink.withOpacity(0.1),
+                          color: AppTheme.primaryPink.withValues(alpha: 0.1),
                           child: Icon(
                             Icons.image_not_supported,
                             size: 48,
@@ -540,7 +540,7 @@ class DashboardPage extends StatelessWidget {
                     }),
                   )
                 : Container(
-                    color: AppTheme.primaryPink.withOpacity(0.1),
+                    color: AppTheme.primaryPink.withValues(alpha: 0.1),
                     child: Icon(
                       Icons.image,
                       size: 48,

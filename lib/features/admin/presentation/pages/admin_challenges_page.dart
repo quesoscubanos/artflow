@@ -39,6 +39,7 @@ class _AdminChallengesPageState extends State<AdminChallengesPage> {
                 decoration: const InputDecoration(labelText: 'Duration (e.g., 7 days)'),
               ),
               DropdownButtonFormField<String>(
+                // ignore: deprecated_member_use
                 value: selectedDifficulty,
                 decoration: const InputDecoration(labelText: 'Difficulty'),
                 items: ['Beginner', 'Intermediate', 'Advanced']
@@ -117,6 +118,7 @@ class _AdminChallengesPageState extends State<AdminChallengesPage> {
                 decoration: const InputDecoration(labelText: 'Duration'),
               ),
               DropdownButtonFormField<String>(
+                // ignore: deprecated_member_use
                 value: selectedDifficulty,
                 decoration: const InputDecoration(labelText: 'Difficulty'),
                 items: ['Beginner', 'Intermediate', 'Advanced']
@@ -233,7 +235,7 @@ class _AdminChallengesPageState extends State<AdminChallengesPage> {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryBlue.withOpacity(0.1),
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -258,7 +260,7 @@ class _AdminChallengesPageState extends State<AdminChallengesPage> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryBlue.withOpacity(0.1),
+                              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(

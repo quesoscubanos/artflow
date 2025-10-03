@@ -8,7 +8,6 @@ import 'package:artflowrise/features/gallery/presentation/pages/gallery_tutorial
 import 'package:artflowrise/features/gallery/presentation/pages/user_publication_detail_page.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -148,7 +147,7 @@ class _GalleryPageState extends State<GalleryPage> {
                       });
                     },
                     backgroundColor: Colors.grey[100],
-                    selectedColor: AppTheme.primaryBlue.withOpacity(0.2),
+                    selectedColor: AppTheme.primaryBlue.withValues(alpha: 0.2),
                     labelStyle: TextStyle(
                       color: isSelected ? AppTheme.primaryBlue : AppTheme.textSecondary,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
@@ -238,7 +237,7 @@ class _GalleryPageState extends State<GalleryPage> {
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Container(
-                                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                                        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                                         child: const Icon(
                                           Icons.image,
                                           size: 48,
@@ -254,7 +253,7 @@ class _GalleryPageState extends State<GalleryPage> {
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
-                                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                                   child: const Icon(
                                     Icons.image,
                                     size: 48,
@@ -293,7 +292,7 @@ class _GalleryPageState extends State<GalleryPage> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Text(
@@ -324,7 +323,7 @@ class _GalleryPageState extends State<GalleryPage> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryBlue.withOpacity(0.1),
+                                color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(

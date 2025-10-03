@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:artflowrise/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.dart';
@@ -5,7 +6,7 @@ import 'package:artflowrise/features/tutorials/presentation/bloc/tutorials_bloc.
 final getIt = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-  print('Initializing dependency injection...');
+  debugPrint('Initializing dependency injection...');
 
   // Register AuthBloc
   getIt.registerFactory<AuthBloc>(() => AuthBloc());
@@ -13,5 +14,5 @@ Future<void> initializeDependencies() async {
   // Register TutorialsBloc
   getIt.registerFactory<TutorialsBloc>(() => TutorialsBloc());
 
-  print('Dependency injection initialized successfully');
+  debugPrint('Dependency injection initialized successfully');
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -193,7 +194,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) {
-    // TODO: Check if user is authenticated
     emit(AuthUnauthenticated());
   }
 
@@ -240,7 +240,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         joinDate: joinDate,
       ));
 
-      print('Registered user: ${event.username}, ${event.email}');
+      debugPrint('Registered user: ${event.username}, ${event.email}');
       await _saveUsers();
       await Future.delayed(const Duration(seconds: 1)); // Simulate API call
       final newUser = _users.last; // The newly added user
@@ -251,7 +251,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthLogoutRequested(AuthLogoutRequested event, Emitter<AuthState> emit) {
-    // TODO: Implement logout logic
     emit(AuthUnauthenticated());
   }
 

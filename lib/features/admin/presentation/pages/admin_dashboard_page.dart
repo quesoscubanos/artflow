@@ -1,10 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
 import 'package:artflowrise/core/data/tutorial_data.dart';
-import 'package:artflowrise/features/gallery/presentation/pages/gallery_tutorial_detail_page.dart';
-import 'package:artflowrise/features/gallery/presentation/pages/user_publication_detail_page.dart';
 import 'package:artflowrise/features/tutorials/presentation/pages/tutorial_detail_page.dart';
 
 class AdminDashboardPage extends StatefulWidget {
@@ -148,7 +145,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
-                                color: AppTheme.primaryBlue.withOpacity(0.1),
+                                color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                                 child: const Icon(
                                   Icons.image_not_supported,
                                   size: 24,
@@ -160,7 +157,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         },
                       )
                     : Container(
-                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                         child: const Icon(
                           Icons.school,
                           size: 24,
@@ -192,7 +189,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue.withOpacity(0.1),
+                            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text(
@@ -284,7 +281,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withOpacity(0.1),
+                color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(

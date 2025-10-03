@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:artflowrise/core/di/injection_container.dart';
 import 'package:artflowrise/core/router/app_router.dart';
 import 'package:artflowrise/core/theme/app_theme.dart';
